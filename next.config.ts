@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   // via native `require` in Server Components / Route Handlers.
   serverExternalPackages: ["wink-nlp", "wink-eng-lite-web-model", "unpdf", "mammoth"],
   poweredByHeader: false,
+  allowedDevOrigins: ['127.0.0.1'],
   turbopack: {
     rules: {
       "*.css": {
