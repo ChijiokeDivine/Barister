@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  // Node.js-native libraries: keep them out of the bundler and load them
+  // via native `require` in Server Components / Route Handlers.
+  serverExternalPackages: ["wink-nlp", "wink-eng-lite-web-model", "unpdf", "mammoth"],
+  poweredByHeader: false,
   turbopack: {
     rules: {
       "*.css": {
