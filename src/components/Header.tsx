@@ -10,52 +10,45 @@ import { FadeIn } from "./Reveal";
 type Group = { label: string; links: { label: string; href: string }[] };
 type Item = { id: string; label: string; groups: Group[] };
 
-// "What We Do" is from the design; the other two are placeholders – swap in real links.
+// Product-led menu. Hrefs are placeholders until the routes exist.
 const MENU: Item[] = [
   {
-    id: "about",
-    label: "About Us",
+    id: "platform",
+    label: "Platform",
     groups: [
       {
-        label: "Company",
+        label: "Build",
         links: [
-          { label: "Our Story", href: "#" },
-          { label: "Leadership", href: "#" },
-          { label: "RedBird Capital", href: "#" },
+          { label: "Workflow Builder", href: "#" },
+          { label: "Multi-Agent Workflows", href: "#" },
+          { label: "Legal Agent Workspace", href: "#" },
+        ],
+      },
+      {
+        label: "Trust",
+        links: [
+          { label: "Data Privacy", href: "#" },
+          { label: "Security", href: "#" },
         ],
       },
     ],
   },
   {
-    id: "what",
-    label: "What We Do",
+    id: "solutions",
+    label: "Use Cases",
     groups: [
       {
-        label: "Strategies",
+        label: "Litigation",
         links: [
-          { label: "Public Credit", href: "#" },
-          { label: "Private Credit", href: "#" },
+          { label: "Deposition Preparation", href: "#" },
+          { label: "Discovery Analysis", href: "#" },
         ],
       },
       {
-        label: "Our Businesses",
+        label: "Transactional",
         links: [
-          { label: "Reckoner Capital Company (RCC)", href: "#" },
-          { label: "Art Finance", href: "#" },
-          { label: "Superyacht Finance", href: "#" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "etf",
-    label: "ETF Products",
-    groups: [
-      {
-        label: "Funds",
-        links: [
-          { label: "All ETFs", href: "#" },
-          { label: "Literature", href: "#" },
+          { label: "Contract Analysis", href: "#" },
+          { label: "Due Diligence", href: "#" },
         ],
       },
     ],
@@ -97,7 +90,7 @@ export default function Header() {
       <FadeIn delay={1000} y={0} className="hidden lg:block">
         <nav
           aria-label="Primary"
-          className="relative flex items-center bg-[#43201f] p-[3px]"
+          className="relative flex items-center bg-[#0f0E0D] p-[3px]"
           onMouseLeave={() => setOpen(null)}
         >
           {MENU.map((item) => {
@@ -111,7 +104,7 @@ export default function Header() {
                 onMouseEnter={() => setOpen(item.id)}
                 onClick={() => setOpen(active ? null : item.id)}
                 className={`flex h-10 items-center gap-1.5 px-[17px] text-[16px] font-medium tracking-[-0.01em] transition-colors duration-300 ${
-                  active ? "bg-[#5a3537] text-[#f9f7f3]" : "hover:bg-white/5"
+                  active ? "bg-[#0f0E0D] text-[#f9f7f3]" : "hover:bg-white/5"
                 } ${open && !active ? "text-[#f9f7f3]/50" : "text-[#f9f7f3]"}`}
               >
                 {item.label}
@@ -124,7 +117,7 @@ export default function Header() {
             onMouseEnter={() => setOpen(null)}
             className="flex h-10 items-center bg-[#f9f7f3] px-[18px] text-[16px] font-medium tracking-[-0.01em] text-[#2b2523] transition-colors hover:bg-white"
           >
-            Contact Us
+            Start building
           </Link>
 
           {MENU.map((item) => (
@@ -176,7 +169,7 @@ export default function Header() {
           type="button"
           aria-label="Open menu"
           onClick={() => setMenu(true)}
-          className="flex h-10 w-10 flex-col items-center justify-center gap-[9px] bg-[#43201f]"
+          className="flex h-10 w-10 flex-col items-center justify-center gap-[9px] bg-[#0f0E0D]"
         >
           <span className="h-px w-5 bg-[#f9f7f3]" />
           <span className="h-px w-5 bg-[#f9f7f3]" />
@@ -252,7 +245,7 @@ export default function Header() {
               onClick={() => setMenu(false)}
               className="flex h-[69px] items-center text-[28px] tracking-[-0.02em]"
             >
-              Contact Us
+              Book a demo
             </Link>
           </li>
         </ul>
