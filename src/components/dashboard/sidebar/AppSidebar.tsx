@@ -52,7 +52,7 @@ export function AppSidebar({
       onClick={handleClick}
       className={cn(
         // Mobile: fixed off-canvas drawer.
-        "fixed inset-y-0 left-0 z-50 h-dvh w-[280px] max-w-[85vw] shrink-0 overflow-hidden bg-sidebar text-sidebar-fg shadow-pop transition-[transform,visibility] duration-200 ease-out",
+        "fixed inset-y-0 left-0 z-[70] h-dvh w-[280px] max-w-[85vw] shrink-0 overflow-hidden bg-sidebar text-sidebar-fg shadow-pop transition-[transform,visibility] duration-200 ease-out",
         mobileOpen ? "visible translate-x-0" : "invisible -translate-x-full",
         // Desktop: static column with the original animated width.
         "lg:visible lg:relative lg:inset-auto lg:z-auto lg:h-full lg:max-w-none lg:translate-x-0 lg:shadow-none lg:transition-[width]",

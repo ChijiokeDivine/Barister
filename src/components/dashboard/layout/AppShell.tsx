@@ -146,7 +146,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           type="button"
           aria-label="Close navigation"
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-40 cursor-default bg-black/45 backdrop-blur-[1px] lg:hidden"
+          className="fixed inset-0 z-[60] cursor-default bg-black/45 backdrop-blur-[1px] lg:hidden"
         />
       )}
 
