@@ -14,8 +14,10 @@ export function Greeting({ children, size = "lg", className }: GreetingProps) {
   return (
     <h1
       className={cn(
-        "text-center font-serif font-normal tracking-[-0.015em] text-fg",
-        size === "lg" ? "text-[44px] leading-[1.1]" : "text-[32px] leading-[1.15]",
+        "text-balance break-words text-center font-serif font-normal tracking-[-0.015em] text-fg",
+        size === "lg"
+          ? "text-[32px] leading-[1.15] sm:text-[38px] lg:text-[44px] lg:leading-[1.1]"
+          : "text-[26px] leading-[1.2] sm:text-[30px] lg:text-[32px] lg:leading-[1.15]",
         className,
       )}
     >
@@ -36,6 +38,8 @@ export function TimeGreeting({ name, size = "lg", className }: { name: string; s
   const [part, setPart] = useState<string | null>(null);
 
   useEffect(() => {
+    // Resolved after mount so server and client markup never disagree.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPart(partOfDay(new Date().getHours()));
   }, []);
 

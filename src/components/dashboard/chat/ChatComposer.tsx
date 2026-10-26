@@ -37,7 +37,7 @@ function SendButton({ disabled }: { disabled?: boolean }) {
       type="submit"
       aria-label="Send"
       disabled={disabled}
-      className="inline-flex size-8 items-center justify-center rounded-lg bg-fg text-[15px] text-white outline-none transition hover:bg-black focus-visible:ring-2 focus-visible:ring-accent/50 disabled:opacity-40"
+      className="inline-flex size-9 items-center justify-center rounded-lg bg-fg text-[15px] text-white outline-none transition hover:bg-black focus-visible:ring-2 focus-visible:ring-accent/50 disabled:opacity-40 sm:size-8"
     >
       <LuArrowUp aria-hidden />
     </button>
@@ -77,7 +77,7 @@ function Field({ value, onChange, placeholder, onEnter, max = 220, className }: 
         onKeyDown={onKeyDown}
         placeholder={placeholder}
         className={cn(
-          "block w-full resize-none bg-transparent text-[14px] leading-6 text-fg outline-none placeholder:text-fg-muted",
+          "block w-full resize-none bg-transparent text-[16px] leading-6 text-fg outline-none placeholder:text-fg-muted sm:text-[14px]",
           className,
         )}
       />
@@ -88,7 +88,7 @@ function Field({ value, onChange, placeholder, onEnter, max = 220, className }: 
 function ModeButton() {
   return (
     <Tooltip label="Senior Partner" side="bottom">
-      <IconButton label="Review mode" size="sm">
+      <IconButton label="Review mode" size="sm" className="max-lg:size-8">
         <LuSlidersHorizontal />
       </IconButton>
     </Tooltip>
@@ -115,7 +115,7 @@ export function LauncherComposer({
 }: LauncherProps) {
   const [text, setText] = useState("");
   const [matterId, setMatterId] = useState<string | null>(null);
-  const [model, setModel] = useState<string>(models[0]);
+  const [model, setModel] = useState<string>(models[0] ?? "");
 
   const matterOptions: DropdownOption[] = matters.map((m) => ({ value: m.id, label: m.name, hint: m.number }));
   const modelOptions: DropdownOption[] = models.map((m) => ({ value: m, label: m }));
@@ -135,14 +135,15 @@ export function LauncherComposer({
       }}
       className={cn("rounded-2xl border border-line bg-surface shadow-card", className)}
     >
-      <div className="flex h-10 items-center justify-between px-3">
+      <div className="flex h-11 items-center justify-between gap-2 px-2.5 sm:h-10 sm:gap-0 sm:px-3">
         <Dropdown
           options={matterOptions}
           value={matterId}
           onChange={setMatterId}
           placeholder="Select a matter"
           icon={<LuBriefcase aria-hidden className="size-3.5" />}
-          menuClassName="min-w-72"
+          className="min-w-0"
+          menuClassName="min-w-72 max-w-[calc(100vw-2rem)]"
         />
         <Dropdown
           options={modelOptions}
@@ -151,13 +152,14 @@ export function LauncherComposer({
           placeholder="Model"
           align="right"
           icon={<LuSparkles aria-hidden className="size-3.5" />}
+          className="shrink-0"
         />
       </div>
 
-      <div className="rounded-2xl border-t border-line bg-canvas px-4 pb-3 pt-3.5 shadow-[0_1px_0_rgb(0_0_0/0.02)]">
+      <div className="rounded-2xl border-t border-line bg-canvas px-3 pb-3 pt-3 shadow-[0_1px_0_rgb(0_0_0/0.02)] sm:px-4 sm:pt-3.5">
         <Field value={text} onChange={setText} placeholder={placeholder} onEnter={submit} />
-        <div className="mt-8 flex items-center justify-between">
-          <IconButton label="Add sources" size="sm">
+        <div className="mt-6 flex items-center justify-between sm:mt-8">
+          <IconButton label="Add sources" size="sm" className="max-lg:size-8">
             <LuPlus />
           </IconButton>
           <div className="flex items-center gap-1">
@@ -165,7 +167,7 @@ export function LauncherComposer({
             {canSend ? (
               <SendButton />
             ) : (
-              <IconButton label="Dictate" size="sm">
+              <IconButton label="Dictate" size="sm" className="max-lg:size-8">
                 <LuMic />
               </IconButton>
             )}
@@ -222,25 +224,25 @@ export function MatterComposer({
         className,
       )}
     >
-      <div className={cn("flex items-center justify-between px-4", compact ? "h-10" : "h-11")}>
+      <div className={cn("flex items-center justify-between gap-3 px-3 sm:px-4", compact ? "h-10" : "h-11")}>
         <button
           type="button"
-          className="inline-flex items-center gap-1 rounded-md text-[13px] font-medium text-accent outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+          className="inline-flex shrink-0 items-center gap-1 rounded-md text-[13px] font-medium text-accent outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
         >
           {matter.number}
           <LuChevronDown aria-hidden className="size-3.5" />
         </button>
-        <span className="inline-flex items-center gap-2 text-[13px] text-fg-muted">
+        <span className="inline-flex min-w-0 items-center gap-2 text-[13px] text-fg-muted">
           <MatterTile initial={spaceName.charAt(0)} tone="teal" size="xs" />
-          {spaceName}
+          <span className="truncate">{spaceName}</span>
         </span>
       </div>
 
-      <div className="rounded-2xl bg-canvas px-4 pb-3 pt-3.5 shadow-[0_-1px_0_var(--color-line)]">
+      <div className="rounded-2xl bg-canvas px-3 pb-3 pt-3.5 shadow-[0_-1px_0_var(--color-line)] sm:px-4">
         {resources && !compact && <ResourceChip {...resources} />}
         <Field value={text} onChange={setText} placeholder={placeholder} onEnter={submit} className={resources && !compact ? "mt-3" : undefined} />
-        <div className={cn("flex items-center justify-between", compact ? "mt-6" : "mt-7")}>
-          <IconButton label="Add sources" size="sm">
+        <div className={cn("flex items-center justify-between", compact ? "mt-5 sm:mt-6" : "mt-6 sm:mt-7")}>
+          <IconButton label="Add sources" size="sm" className="max-lg:size-8">
             <LuPlus />
           </IconButton>
           <div className="flex items-center gap-1.5">
@@ -255,9 +257,9 @@ export function MatterComposer({
 
 function ResourceChip({ count, vaults, queries }: { count: number; vaults: number; queries: number }): ReactNode {
   return (
-    <div className="inline-flex items-center gap-3 rounded-lg bg-surface px-3.5 py-2.5">
-      <LuPaperclip aria-hidden className="size-4 text-fg-muted" />
-      <div className="leading-tight">
+    <div className="inline-flex max-w-full items-center gap-3 rounded-lg bg-surface px-3 py-2.5 sm:px-3.5">
+      <LuPaperclip aria-hidden className="size-4 shrink-0 text-fg-muted" />
+      <div className="min-w-0 leading-tight">
         <p className="text-[13px] font-medium text-fg">{count} resources</p>
         <p className="text-[12px] text-fg-muted">
           {vaults} vaults · {queries} queries

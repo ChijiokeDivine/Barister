@@ -5,9 +5,9 @@ import { MatterSearch } from "@/components/dashboard/search/MatterSearch";
 /** Matter picker: greeting + searchable matter list. */
 export default function CasesPage() {
   return (
-    <div className="flex min-h-full flex-1 flex-col items-center justify-center px-6 pb-24">
+    <div className="flex min-h-full flex-1 flex-col items-center justify-center px-4 pb-16 sm:px-6 lg:pb-24">
       <TimeGreeting name={currentUser.firstName} size="lg" />
-      <MatterSearch matters={matters} className="mt-9 w-full max-w-[440px]" />
+      <MatterSearch matters={matters} className="mt-7 w-full max-w-[440px] sm:mt-9" />
     </div>
   );
 }

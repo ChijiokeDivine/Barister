@@ -60,7 +60,7 @@ export function Dropdown({
   }, [open]);
 
   return (
-    <div ref={rootRef} className={cn("relative", className)}>
+    <div ref={rootRef} className={cn("relative min-w-0", className)}>
       <button
         type="button"
         aria-haspopup="listbox"
@@ -68,7 +68,7 @@ export function Dropdown({
         aria-controls={listId}
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-[13px] text-fg-muted outline-none transition-colors hover:text-fg focus-visible:ring-2 focus-visible:ring-accent/40",
+          "inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-[13px] text-fg-muted outline-none transition-colors hover:text-fg focus-visible:ring-2 focus-visible:ring-accent/40 [&>svg]:shrink-0",
           triggerClassName,
         )}
       >
@@ -77,8 +77,8 @@ export function Dropdown({
         ) : (
           <>
             {icon}
-            <span>{selected?.label ?? placeholder}</span>
-            <LuChevronDown aria-hidden className={cn("size-3.5 transition-transform", open && "rotate-180")} />
+            <span className="min-w-0 truncate">{selected?.label ?? placeholder}</span>
+            <LuChevronDown aria-hidden className={cn("size-3.5 shrink-0 transition-transform", open && "rotate-180")} />
           </>
         )}
       </button>
@@ -88,7 +88,7 @@ export function Dropdown({
           id={listId}
           role="listbox"
           className={cn(
-            "absolute z-40 mt-1.5 min-w-52 overflow-hidden rounded-lg border border-line bg-canvas p-1 shadow-pop",
+            "absolute z-40 mt-1.5 max-w-[calc(100vw-1rem)] min-w-52 overflow-hidden rounded-lg border border-line bg-canvas p-1 shadow-pop",
             align === "right" ? "right-0" : "left-0",
             menuClassName,
           )}
@@ -103,9 +103,9 @@ export function Dropdown({
                 }}
                 className="flex w-full items-center justify-between gap-3 rounded-md px-2.5 py-1.5 text-left text-[13px] text-fg transition-colors hover:bg-surface"
               >
-                <span className="truncate">{o.label}</span>
+                <span className="min-w-0 truncate">{o.label}</span>
                 <span className="flex items-center gap-2 text-fg-subtle">
-                  {o.hint && <span className="text-[12px]">{o.hint}</span>}
+                  {o.hint && <span className="shrink-0 whitespace-nowrap text-[12px]">{o.hint}</span>}
                   {o.value === value && <LuCheck aria-hidden className="size-3.5 text-accent" />}
                 </span>
               </button>

@@ -21,7 +21,7 @@ interface QuickSourcesProps {
 /** Row of source chips under the composer. */
 export function QuickSources({ sources, selected = [], onToggle, className }: QuickSourcesProps) {
   return (
-    <div className={cn("grid grid-cols-4 gap-2", className)}>
+    <div className={cn("grid grid-cols-2 gap-2 sm:grid-cols-4", className)}>
       {sources.map((s) => {
         const on = selected.includes(s.id);
         return (
@@ -31,14 +31,14 @@ export function QuickSources({ sources, selected = [], onToggle, className }: Qu
             aria-pressed={on}
             onClick={() => onToggle?.(s.id)}
             className={cn(
-              "flex h-9 items-center justify-between gap-2 rounded-lg border px-3 text-[12.5px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent/40",
+              "flex h-10 items-center justify-between gap-2 rounded-lg border px-2.5 text-[12px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 sm:h-9 sm:px-3 sm:text-[12.5px]",
               on
                 ? "border-accent/40 bg-accent/5 text-fg"
                 : "border-line bg-surface text-fg-muted hover:bg-surface-strong hover:text-fg",
             )}
           >
             <span className="flex min-w-0 items-center gap-2">
-              <span aria-hidden className="text-[14px] text-fg">
+              <span aria-hidden className="shrink-0 text-[14px] text-fg">
                 {icons[s.id]}
               </span>
               <span className="truncate">{s.label}</span>

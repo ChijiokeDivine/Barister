@@ -53,13 +53,14 @@ export function MatterSearch({
       setIndex((active - 1 + results.length) % results.length);
     } else if (e.key === "Enter") {
       e.preventDefault();
-      choose(results[active]);
+      const picked = results[active];
+      if (picked) choose(picked);
     }
   };
 
   return (
     <div className={cn("overflow-hidden rounded-xl border border-line bg-canvas shadow-card", className)}>
-      <div className="flex h-12 items-center gap-3 px-4">
+      <div className="flex h-12 items-center gap-2.5 px-3 sm:gap-3 sm:px-4">
         <LuSearch aria-hidden className="size-[17px] shrink-0 text-fg" />
         <input
           type="text"
@@ -76,7 +77,7 @@ export function MatterSearch({
           }}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-fg outline-none placeholder:text-fg-muted"
+          className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-fg outline-none placeholder:text-fg-muted sm:text-[14px]"
         />
       </div>
 
@@ -89,11 +90,11 @@ export function MatterSearch({
               onMouseEnter={() => setIndex(i)}
               onClick={() => choose(m)}
               className={cn(
-                "grid h-10 w-full grid-cols-[110px_1fr] items-center gap-3 rounded-lg px-3 text-left text-[14px] transition-colors",
+                "grid h-11 w-full grid-cols-[86px_1fr] items-center gap-2 rounded-lg px-2.5 text-left text-[13px] transition-colors sm:h-10 sm:grid-cols-[110px_1fr] sm:gap-3 sm:px-3 sm:text-[14px]",
                 i === active ? "bg-surface" : "bg-transparent",
               )}
             >
-              <span className="text-fg">{m.number}</span>
+              <span className="truncate text-fg">{m.number}</span>
               <span className="flex min-w-0 items-center gap-2.5">
                 <MatterTile initial={m.initial} tone={m.tone} />
                 <span className="truncate text-fg-muted">{m.name}</span>

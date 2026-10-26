@@ -73,3 +73,12 @@ body {
   mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
 }
 
+/* Horizontal scrollers (tabs, chip rows) without a visible scrollbar. */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+

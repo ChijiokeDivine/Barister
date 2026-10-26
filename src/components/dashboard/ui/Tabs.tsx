@@ -30,7 +30,9 @@ export function Tabs({ items, value, onValueChange, label, className }: TabsProp
     else if (e.key === "End") next = items.length - 1;
     else return;
     e.preventDefault();
-    onValueChange(items[next].id);
+    const nextItem = items[next];
+    if (!nextItem) return;
+    onValueChange(nextItem.id);
     refs.current[next]?.focus();
   };
 
@@ -50,7 +52,7 @@ export function Tabs({ items, value, onValueChange, label, className }: TabsProp
             tabIndex={active ? 0 : -1}
             onClick={() => onValueChange(item.id)}
             className={cn(
-              "relative py-1 text-[13px] outline-none transition-colors focus-visible:text-fg",
+              "relative shrink-0 whitespace-nowrap py-1 text-[13px] outline-none transition-colors focus-visible:text-fg",
               active ? "font-medium text-fg" : "text-fg-muted hover:text-fg",
             )}
           >

@@ -7,7 +7,7 @@ export function ResourceCard({ item }: { item: ResourceItem }) {
   return (
     <Link
       href={item.href}
-      className="group flex min-h-[132px] flex-col justify-between rounded-xl bg-surface p-4 outline-none transition-colors hover:bg-surface-strong focus-visible:ring-2 focus-visible:ring-accent/40"
+      className="group flex min-h-[108px] flex-col justify-between rounded-xl bg-surface p-3 outline-none transition-colors hover:bg-surface-strong focus-visible:ring-2 focus-visible:ring-accent/40 sm:min-h-[132px] sm:p-4"
     >
       <span aria-hidden className="inline-flex size-6 items-center justify-center text-[15px] text-fg-muted">
         <LuFolder />
@@ -50,7 +50,7 @@ export function ResourceSection({ title, items, viewAllHref, className }: Resour
           View all
         </Link>
       </header>
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
         {items.map((item) => (
           <ResourceCard key={item.id} item={item} />
         ))}

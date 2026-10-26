@@ -12,6 +12,7 @@ import {
   LuPanelLeft,
   LuPlus,
   LuSearch,
+  LuX,
 } from "react-icons/lu";
 import { IconButton } from "../ui/IconButton";
 import { Wordmark } from "../ui/Brand";
@@ -36,13 +37,20 @@ export function SpaceSidebar({ onToggle }: Props) {
           <IconButton label="Search" tone="dark" size="sm">
             <LuSearch />
           </IconButton>
-          <IconButton label="Collapse sidebar" tone="dark" size="sm" onClick={onToggle}>
-            <LuPanelLeft />
-          </IconButton>
+          <span className="lg:hidden">
+            <IconButton label="Close navigation" tone="dark" size="sm" onClick={onToggle} className="max-lg:size-8">
+              <LuX />
+            </IconButton>
+          </span>
+          <span className="hidden lg:inline-flex">
+            <IconButton label="Collapse sidebar" tone="dark" size="sm" onClick={onToggle}>
+              <LuPanelLeft />
+            </IconButton>
+          </span>
         </div>
       </div>
 
-      <nav aria-label="Primary" className="scroll-quiet min-h-0 flex-1 overflow-y-auto px-3 pb-3">
+      <nav aria-label="Primary" className="scroll-quiet min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-3">
         <SidebarNavItem icon={<LuPlus />} label="New" href="/dashboard" />
         <SidebarNavItem icon={<LuBot />} label="Agents" href="/agents" />
         <SidebarNavItem icon={<LuFolder />} label="Vault" href="/vault" />

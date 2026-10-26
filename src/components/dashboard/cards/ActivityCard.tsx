@@ -30,7 +30,7 @@ export function ActivityCard({ items, viewAllHref = "/audit-trail", className }:
         </Link>
       </header>
 
-      <ul className="mt-6 space-y-5">
+      <ul className="mt-5 space-y-4 lg:mt-6 lg:space-y-5">
         {items.map((item) => (
           <li key={item.id} className="flex items-start gap-3">
             <span
@@ -39,7 +39,7 @@ export function ActivityCard({ items, viewAllHref = "/audit-trail", className }:
             >
               {item.kind === "agents" ? <LuBot /> : <LuFilePlus2 />}
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 break-words">
               <p className="text-[13px] leading-snug text-fg">{item.text}</p>
               <p className="mt-0.5 text-[12px] text-fg-subtle">{item.meta}</p>
             </div>

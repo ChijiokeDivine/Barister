@@ -18,7 +18,7 @@ interface NavItemProps {
 }
 
 const itemBase =
-  "group flex h-8 w-full items-center gap-2.5 rounded-md px-2 text-left text-[13px] text-sidebar-fg/90 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white/25";
+  "group flex h-8 w-full items-center gap-2.5 rounded-md px-2 text-left text-[13px] text-sidebar-fg/90 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white/25 max-lg:h-9";
 
 export function SidebarNavItem({
   icon,
@@ -107,7 +107,7 @@ export function ThreadRow({ thread, colored }: { thread: RecentThread; colored?:
     <Link
       href={thread.href}
       title={thread.title}
-      className="flex h-8 items-center gap-3 rounded-md px-2.5 text-[13px] text-sidebar-fg/85 outline-none transition-colors hover:bg-sidebar-hover focus-visible:ring-2 focus-visible:ring-white/25"
+      className="flex h-8 items-center gap-3 rounded-md px-2.5 text-[13px] text-sidebar-fg/85 outline-none transition-colors hover:bg-sidebar-hover focus-visible:ring-2 focus-visible:ring-white/25 max-lg:h-9"
     >
       <RecentDot tone={colored ? thread.dot : undefined} />
       <span className="fade-end min-w-0 flex-1 overflow-hidden whitespace-nowrap">{thread.title}</span>

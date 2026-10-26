@@ -14,6 +14,10 @@ const tabs = [
   { id: "activity", label: "Activity" },
 ];
 
+// Matter ids are only known per request, so this segment renders on demand
+// instead of being prerendered with the rest of the dashboard.
+export const instant = false;
+
 /** Space home: header + tabs, composer, vaults, library and activity rail. */
 export default async function CasePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,9 +26,18 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
 
   return (
     <>
-      <PageHeader title="Project Titan | Acme Co" tabs={tabs} action={<HeaderButton>Add members</HeaderButton>} />
-      <div className="mx-auto grid w-full max-w-[1120px] grid-cols-1 gap-10 px-10 py-7 lg:grid-cols-[minmax(0,1fr)_260px]">
-        <div className="min-w-0 space-y-10">
+      <PageHeader
+        title="Project Titan | Acme Co"
+        tabs={tabs}
+        action={
+          <HeaderButton>
+            <span className="sm:hidden">Invite</span>
+            <span className="hidden sm:inline">Add members</span>
+          </HeaderButton>
+        }
+      />
+      <div className="mx-auto grid w-full max-w-[1120px] grid-cols-1 gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-10 lg:px-10 lg:py-7">
+        <div className="min-w-0 space-y-8 lg:space-y-10">
           <MatterComposer matter={matter} spaceName="Project Titan — Acme Co" size="compact" />
           <ResourceSection title="Vaults" items={vaults} viewAllHref="/vault" />
           <ResourceSection title="Library" items={library} viewAllHref="/workflows" />
