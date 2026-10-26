@@ -10,6 +10,36 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-canvas: #ffffff;
+  --color-surface: #f6f5f3;
+  --color-surface-strong: #efeeeb;
+  --color-line: #e9e8e5;
+  --color-fg: #1a1a19;
+  --color-fg-muted: #6b6a67;
+  --color-fg-subtle: #9b9a96;
+
+  --color-accent: #2b6b63;
+  --color-sage: #cdd8d6;
+
+  --color-sidebar: #0f0f0f;
+  --color-sidebar-hover: #1b1b1b;
+  --color-sidebar-active: #272727;
+  --color-sidebar-fg: #f1f1f0;
+  --color-sidebar-muted: #8b8b89;
+  --color-sidebar-line: #232323;
+
+  --color-space-teal: #3fb3a8;
+  --color-space-slate: #8c8f93;
+  --color-space-violet: #8b7cf0;
+  --color-tile-plum: #3a2a5c;
+  --color-tile-teal: #2b6b63;
+  --color-tile-ink: #2a2d31;
+
+  --color-tip: #4a2a30;
+
+  --shadow-card: 0 1px 2px rgb(20 20 20 / 0.04), 0 8px 24px rgb(20 20 20 / 0.07);
+  --shadow-pop: 0 2px 6px rgb(20 20 20 / 0.06), 0 16px 40px rgb(20 20 20 / 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +53,23 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
+
+/* Thin, quiet scrollbars for the dark sidebar and long lists. */
+.scroll-quiet {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.scroll-quiet:hover {
+  scrollbar-color: rgb(128 128 128 / 0.4) transparent;
+}
+
+/* Right-edge fade for truncated sidebar labels. */
+.fade-end {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+}
+
