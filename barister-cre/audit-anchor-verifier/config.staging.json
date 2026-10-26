@@ -1,0 +1,9 @@
+{
+  "apiUrl": "http://127.0.0.1:8787/api/audit",
+  "rpcUrl": "https://ethereum-sepolia-rpc.publicnode.com",
+  "chainSelectorName": "ethereum-testnet-sepolia",
+  "proofPrefix": "0x4c4631",
+  "maxAnchors": 10,
+  "authorizedKeys": [],
+  "requireAuthorizedKeys": false
+}

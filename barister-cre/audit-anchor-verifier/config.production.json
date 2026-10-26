@@ -1,0 +1,9 @@
+{
+  "apiUrl": "https://barister.example.com/api/audit",
+  "rpcUrl": "https://ethereum-sepolia-rpc.publicnode.com",
+  "chainSelectorName": "ethereum-testnet-sepolia",
+  "proofPrefix": "0x4c4631",
+  "maxAnchors": 10,
+  "authorizedKeys": [],
+  "requireAuthorizedKeys": true
+}
