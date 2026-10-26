@@ -37,6 +37,8 @@ const STORIES: Story[] = [
     role: "Litigation Partner @ Whitfield & Cross",
     href: "/case-studies/deposition-prep",
     gradient: "from-zinc-600 via-zinc-800 to-zinc-950",
+    videoSrc: "/videos/8061570-hd_1920_1080_25fps.mp4",
+    image: "/images/pexels-sora-shimazaki-5668773.jpg",
   },
   {
     id: "discovery-review",
@@ -48,6 +50,8 @@ const STORIES: Story[] = [
     role: "Senior Associate @ Bello Harmon LLP",
     href: "/case-studies/discovery-review",
     gradient: "from-stone-600 via-stone-800 to-neutral-950",
+    videoSrc: "/videos/8061570-hd_1920_1080_25fps.mp4",
+    image: "/images/pexels-rdne-7841439.jpg",
   },
   {
     id: "privacy-first",
@@ -59,6 +63,8 @@ const STORIES: Story[] = [
     role: "General Counsel @ Northgate Legal Group",
     href: "/case-studies/privacy-first",
     gradient: "from-slate-600 via-slate-800 to-zinc-950",
+    videoSrc: "/videos/8061570-hd_1920_1080_25fps.mp4",
+    image: "/images/pexels-kampus-8428066.jpg",
   },
   {
     id: "audit-trail",
@@ -70,6 +76,8 @@ const STORIES: Story[] = [
     role: "Managing Partner @ Okafor & Lind",
     href: "/case-studies/audit-trail",
     gradient: "from-neutral-600 via-neutral-800 to-black",
+    videoSrc: "/videos/8061570-hd_1920_1080_25fps.mp4",
+    image: "/images/pexels-august-de-richelieu-4427506.jpg",
   },
 ];
 
@@ -164,7 +172,6 @@ export default function LegalCaseStudies() {
                 {isPlaying ? (
                   <video
                     src={story.videoSrc}
-                    controls
                     autoPlay
                     className="absolute inset-0 h-full w-full object-cover"
                   />

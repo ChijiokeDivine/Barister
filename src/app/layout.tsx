@@ -7,8 +7,8 @@ const sans = Inter_Tight({ subsets: ["latin"], variable: "--font-sans", display:
 const serif = Newsreader({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Reckoner Capital Management",
-  description: "Alternative credit access, simplified.",
+  title: "Barister",
+  description: "Build workflows for complex legal work",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

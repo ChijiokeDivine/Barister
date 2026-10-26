@@ -13,8 +13,8 @@ const CELLS = (() => {
 })();
 
 export default function Logo({ tone = "light" }: { tone?: "light" | "dark" }) {
-  const dot = tone === "light" ? "#0f0E0D" : "#8c1d1b";
-  const text = tone === "light" ? "#0f0E0D" : "#231f1e";
+  const dot = tone === "light" ? "#0f0E0D" : "#0f0E0D";
+  const text = tone === "light" ? "#0f0E0D" : "#0f0E0D";
   return (
     <span className="flex items-center gap-[7px]" aria-label="Reckoner Capital Management">
       <svg viewBox="0 0 50 50" className="h-[25px] w-[25px] md:h-[28px] md:w-[28px]" aria-hidden>

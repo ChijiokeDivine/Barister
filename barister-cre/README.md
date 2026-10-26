@@ -2,6 +2,10 @@
 
 Read-only audit-anchor verification workflow for the Barister proof layer.
 
+> **Local-only:** this folder has its own Bun/QuickJS toolchain. It is excluded from the
+> Next.js TypeScript project (`tsconfig.json`), ESLint, and Vercel deploys (`.vercelignore`).
+> Build and run it from `barister-cre/`; it is not part of the deployed web app.
+
 The workflow receives an HTTP webhook, fetches Barister's `GET /api/audit` ledger with a
 Vault-backed bearer secret, and verifies each `LF1 + SHA-256` anchor against Ethereum Sepolia
 over JSON-RPC. It never writes onchain, so local simulation needs no receiver contract and no

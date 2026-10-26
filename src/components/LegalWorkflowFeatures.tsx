@@ -101,7 +101,7 @@ export default function LegalWorkflowFeatures() {
         </div>
 
         <div
-          className="mb-5 flex items-center justify-center gap-2 overflow-x-auto pb-2 md:mb-7 md:gap-2.5 md:pb-0"
+          className="mb-5 flex items-center justify-start gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mb-7 md:justify-center md:gap-2.5 md:pb-0"
           role="tablist"
           aria-label="Legal workflow capabilities"
         >

@@ -191,7 +191,7 @@ export default function Header() {
             type="button"
             aria-label="Close menu"
             onClick={() => setMenu(false)}
-            className="flex h-10 w-10 items-center justify-center bg-[#ddd0b7]"
+            className="flex h-10 w-10 items-center justify-center bg-[#e4e2df]"
           >
             <FiX size={26} strokeWidth={1} />
           </button>
