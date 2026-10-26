@@ -9,15 +9,15 @@ const HEADLINE = [["Build", "workflows"], ["for complex", "legal", "work"]];
 
 export default function Hero() {
   return (
-    <section className="relative isolate flex h-[80vh]  md:min-h-[200svh] flex-col overflow-hidden bg-[#FAFAF9] text-[#f9f7f3] ">
+    <section className="relative isolate flex h-[90vh] [@media(max-height:670px)_and_(max-width:767px)]:h-[110vh] md:min-h-[200svh] flex-col overflow-hidden bg-[#FAFAF9] text-[#f9f7f3] ">
       {/* Placeholder – drop your candlestick image at /public/hero-bg.png (or swap for next/image) */}
       <div aria-hidden className="absolute inset-0 -z-10 bg-[url('/hero-bg.png')] bg-cover bg-center" />
 
       <Header />
 
       {/* Headline */}
-      <div className="relative flex flex-1 flex-col items-start justify-center px-5 pb-6 pt-24 md:px-11 md:pb-0 md:pt-50">
-        <h1 className="text-[40px] font-normal leading-[1.04] tracking-[-0.035em] md:text-[clamp(50px,6.2vw,80px)] text-[#0f0E0D]">
+      <div className="relative flex flex-1 flex-col items-start justify-center px-5 pb-6 pt-30 md:px-11 md:pb-0 md:pt-50">
+        <h1 className="text-[36px] font-normal leading-[1.04] tracking-[-0.035em] md:text-[clamp(50px,6.2vw,80px)] text-[#0f0E0D]">
           <RevealWords lines={HEADLINE} delay={150} stagger={120} />
         </h1>
         <Image
