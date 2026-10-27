@@ -17,7 +17,7 @@ export default function Hero() {
 
       {/* Headline */}
       <div className="relative flex flex-1 flex-col items-start justify-center px-5 pb-6 pt-30 md:px-11 md:pb-0 md:pt-50">
-        <h1 className="text-[36px] font-normal leading-[1.04] tracking-[-0.035em] md:text-[clamp(50px,6.2vw,80px)] text-[#0f0E0D]">
+        <h1 className="text-[33px] font-normal leading-[1.04] tracking-[-0.035em] md:text-[clamp(50px,6.2vw,80px)] text-[#0f0E0D]">
           <RevealWords lines={HEADLINE} delay={150} stagger={120} />
         </h1>
         <Image
