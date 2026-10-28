@@ -119,7 +119,7 @@ export function generatorSystemPrompt(): string {
   const catalog = nodeCatalog()
     .map((n) => `- ${n.type}: ${n.description} | produces: ${n.produces} | needs one of: ${n.needsAny.join(", ") || "nothing"} | config: ${JSON.stringify(Object.keys((n.configSchema as { properties?: object }).properties ?? {}))}`)
     .join("\n");
-  const example = JSON.stringify({ name: TEMPLATES[0]!.name, description: TEMPLATES[0]!.description, graph: { nodes: TEMPLATES[0]!.graph.nodes.map(({ position: _p, ...n }) => n), edges: TEMPLATES[0]!.graph.edges.map(({ source, target }) => ({ source, target })) } });
+  const example = JSON.stringify({ name: TEMPLATES[0]!.name, description: TEMPLATES[0]!.description, graph: { nodes: TEMPLATES[0]!.graph.nodes.map((n) => ({ id: n.id, type: n.type, data: n.data })), edges: TEMPLATES[0]!.graph.edges.map(({ source, target }) => ({ source, target })) } });
   return `You design legal workflows as node graphs for a multi-agent platform. Translate the user's request into a graph using ONLY these node types:
 ${catalog}
 

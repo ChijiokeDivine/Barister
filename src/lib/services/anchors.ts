@@ -2,7 +2,6 @@
  * Anchor records = our local ledger of what was written to Sepolia. The CHAIN is the source of truth; this ledger
  * just makes the audit page fast and lets us re-verify (recompute hash → compare with tx calldata → read block time).
  */
-import { z } from "zod";
 import { anchorHash, chainConfigured, getTxStatus, inputMatches, txUrl, CHAIN } from "../chain";
 import { badRequest, notConfigured, notFound } from "../errors";
 import { hashJSON, isSha256Hex } from "../hash";

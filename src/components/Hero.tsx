@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FiChevronDown } from "react-icons/fi";
 import Header from "./Header";
 import { FadeIn, RevealWords } from "./Reveal";
 
