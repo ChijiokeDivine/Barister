@@ -116,11 +116,7 @@ export default function LegalCaseStudies() {
   }, [syncActive]);
 
   // Stop any playing video once the user moves to another card.
-  useEffect(() => {
-    setPlayingId((current) =>
-      current && STORIES[active]?.id !== current ? null : current
-    );
-  }, [active]);
+  const visiblePlayingId = playingId && STORIES[active]?.id === playingId ? playingId : null;
 
   const goTo = (index: number) => {
     const track = trackRef.current;
@@ -152,7 +148,7 @@ export default function LegalCaseStudies() {
       >
         {STORIES.map((story, i) => {
           const isActive = i === active;
-          const isPlaying = playingId === story.id && !!story.videoSrc;
+          const isPlaying = visiblePlayingId === story.id && !!story.videoSrc;
 
           return (
             <article

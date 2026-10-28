@@ -4,7 +4,7 @@ import "@xyflow/react/dist/style.css";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import {
   Background,
   Controls,
@@ -23,7 +23,6 @@ import {
 } from "@xyflow/react";
 import {
   LuArrowLeft,
-  LuBot,
   LuCheck,
   LuChevronRight,
   LuCircleAlert,
@@ -171,6 +170,43 @@ function autoLayout(nodes: BuilderNode[], edges: Edge[]): BuilderNode[] {
 
 const labelize = (s: string) => s.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
 
+const emptySubscribe = () => () => {};
+/** False during SSR/hydration, true once the browser owns the tree. */
+function useMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+}
+
+interface DraftSeed {
+  name?: string;
+  description?: string;
+  nodes: BuilderNode[];
+  edges: Edge[];
+  error?: string;
+}
+
+/** The chat hand-off writes the generated graph to sessionStorage, so it can only be read in the browser. */
+function readDraftSeed(draft: boolean | undefined, catalog: NodeCatalogItem[]): DraftSeed | null {
+  if (!draft || typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem("barister.workflow.draft");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { name?: string; description?: string; graph?: WorkflowGraph };
+    if (!parsed.graph) return null;
+    return {
+      name: parsed.name,
+      description: parsed.description,
+      nodes: toNodes(parsed.graph, catalog),
+      edges: toEdges(parsed.graph),
+    };
+  } catch {
+    return { nodes: [], edges: [], error: "The workflow draft in local storage could not be read." };
+  }
+}
+
 interface WorkflowBuilderProps {
   mode: "create" | "edit";
   workflowId?: string;
@@ -182,21 +218,21 @@ interface WorkflowBuilderProps {
 
 export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, draft }: WorkflowBuilderProps) {
   const router = useRouter();
-  const [name, setName] = useState(initial?.name ?? "");
-  const [description, setDescription] = useState(initial?.description ?? "");
-  const [nodes, setNodes, onNodesChange] = useNodesState<BuilderNode>(initial ? toNodes(initial.graph, catalog) : []);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initial ? toEdges(initial.graph) : []);
+  const [seed] = useState(() => readDraftSeed(draft, catalog));
+  const [name, setName] = useState(seed?.name ?? initial?.name ?? "");
+  const [description, setDescription] = useState(seed?.description ?? initial?.description ?? "");
+  const [nodes, setNodes, onNodesChange] = useNodesState<BuilderNode>(seed?.nodes ?? (initial ? toNodes(initial.graph, catalog) : []));
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(seed?.edges ?? (initial ? toEdges(initial.graph) : []));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
   const [validating, setValidating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [running, setRunning] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(seed?.error ?? null);
   const [caseId, setCaseId] = useState("");
   const [instructions, setInstructions] = useState("");
-  const [mounted, setMounted] = useState(false);
-  const [draftLoaded, setDraftLoaded] = useState(false);
+  const mounted = useMounted();
 
   const graph = useMemo<WorkflowGraph>(
     () => ({
@@ -212,36 +248,14 @@ export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, d
   );
   const graphKey = JSON.stringify(graph);
   const graphRef = useRef(graph);
-  graphRef.current = graph;
 
   useEffect(() => {
-    // React Flow measures the DOM, so mount the canvas only after hydration.
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!draft || draftLoaded) return;
-    setDraftLoaded(true);
-    try {
-      const raw = sessionStorage.getItem("barister.workflow.draft");
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { name?: string; description?: string; graph?: WorkflowGraph };
-      if (!parsed.graph) return;
-      setName(parsed.name ?? "");
-      setDescription(parsed.description ?? "");
-      setNodes(toNodes(parsed.graph, catalog));
-      setEdges(toEdges(parsed.graph));
-    } catch {
-      setError("The workflow draft in local storage could not be read.");
-    }
-  }, [catalog, draft, draftLoaded, setEdges, setNodes]);
+    graphRef.current = graph;
+  }, [graph]);
 
   useEffect(() => {
     if (!mounted) return;
-    if (!nodes.length) {
-      setIssues([]);
-      return;
-    }
+    if (!nodes.length) return;
     const timer = setTimeout(async () => {
       setValidating(true);
       try {
@@ -256,14 +270,16 @@ export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, d
     return () => clearTimeout(timer);
   }, [graphKey, mounted, nodes.length]);
 
+  const activeIssues = useMemo(() => (nodes.length ? issues : []), [issues, nodes.length]);
+
   const issueByNode = useMemo(() => {
     const map = new Map<string, string[]>();
-    for (const issue of issues) {
+    for (const issue of activeIssues) {
       if (!issue.nodeId) continue;
       map.set(issue.nodeId, [...(map.get(issue.nodeId) ?? []), issue.message]);
     }
     return map;
-  }, [issues]);
+  }, [activeIssues]);
 
   const displayNodes = useMemo(
     () => nodes.map((n) => ({ ...n, data: { ...n.data, invalid: issueByNode.has(n.id) } })),
@@ -341,7 +357,7 @@ export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, d
       setError("Add at least one step before running.");
       return;
     }
-    if (issues.length) {
+    if (activeIssues.length) {
       setError("Fix the validation issues first — the run would fail immediately.");
       return;
     }
@@ -417,9 +433,9 @@ export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, d
                 <>
                   <Spinner className="size-3" /> Checking…
                 </>
-              ) : issues.length ? (
+              ) : activeIssues.length ? (
                 <>
-                  <LuCircleAlert aria-hidden className="size-3.5 text-amber-600" /> {issues.length} issue{issues.length === 1 ? "" : "s"}
+                  <LuCircleAlert aria-hidden className="size-3.5 text-amber-600" /> {activeIssues.length} issue{activeIssues.length === 1 ? "" : "s"}
                 </>
               ) : nodes.length ? (
                 <>
@@ -564,11 +580,11 @@ export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, d
             <div className="mt-4 border-t border-line pt-3">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-fg-subtle">Validation</p>
-                {issues.length > 0 && <Badge tone="warn">{issues.length}</Badge>}
+                {activeIssues.length > 0 && <Badge tone="warn">{activeIssues.length}</Badge>}
               </div>
-              {issues.length ? (
+              {activeIssues.length ? (
                 <ul className="mt-2 space-y-1.5">
-                  {issues.slice(0, 8).map((issue, i) => (
+                  {activeIssues.slice(0, 8).map((issue, i) => (
                     <li key={`${issue.nodeId ?? "graph"}-${i}`}>
                       <button
                         type="button"

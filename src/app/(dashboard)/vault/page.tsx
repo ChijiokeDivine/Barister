@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LuFileText, LuFolder, LuShieldCheck } from "react-icons/lu";
 import { Badge } from "@/components/dashboard/ui/Badge";
 import { EmptyState } from "@/components/dashboard/ui/EmptyState";
@@ -64,9 +65,9 @@ export default async function VaultPage({ searchParams }: Props) {
           Apply
         </button>
         {(raw || caseId === null) && (
-          <a href="/vault" className="inline-flex h-9 items-center px-1 text-[12.5px] text-fg-muted transition hover:text-fg">
+          <Link href="/vault" className="inline-flex h-9 items-center px-1 text-[12.5px] text-fg-muted transition hover:text-fg">
             Clear
-          </a>
+          </Link>
         )}
       </form>
 

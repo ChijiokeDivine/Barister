@@ -11,9 +11,10 @@ import { ApiError, notConfigured } from "./errors";
 const VERSION = 1;
 
 function masterKey(): Buffer {
-  const raw = need("VAULT_ENCRYPTION_KEY");
-  const key = Buffer.from(raw, "base64");
-  if (key.length !== 32) throw notConfigured("VAULT_ENCRYPTION_KEY (must be 32 bytes, base64-encoded)");
+  const raw = need("VAULT_ENCRYPTION_KEY").trim();
+  // Accept both the documented base64 form and the 64-character hex form most generators emit.
+  const key = /^[0-9a-f]{64}$/i.test(raw) ? Buffer.from(raw, "hex") : Buffer.from(raw, "base64");
+  if (key.length !== 32) throw notConfigured("VAULT_ENCRYPTION_KEY (must be 32 bytes: base64 or 64-character hex)");
   return key;
 }
 

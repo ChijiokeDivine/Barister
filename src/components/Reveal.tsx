@@ -1,37 +1,40 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+const REDUCED_QUERY = "(prefers-reduced-motion: reduce)";
+
+const subscribeReducedMotion = (onChange: () => void) => {
+  const media = window.matchMedia(REDUCED_QUERY);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+};
+const reducedSnapshot = () => window.matchMedia(REDUCED_QUERY).matches;
 
 /** Reveals once when the element enters the viewport. Respects reduced motion. */
 function useReveal<T extends HTMLElement>(threshold = 0.15) {
   const ref = useRef<T>(null);
   const [shown, setShown] = useState(false);
-  const [reduced, setReduced] = useState(false);
+  const reduced = useSyncExternalStore(subscribeReducedMotion, reducedSnapshot, () => false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setReduced(true);
-      setShown(true);
-      return;
-    }
+    if (!el || reduced) return;
     const io = new IntersectionObserver(
-        (entries) => {
-            if (entries.some((entry) => entry.isIntersecting)) {
-            setShown(true);
-            io.disconnect();
-            }
-        },
-        { threshold }
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { threshold },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [threshold]);
+  }, [threshold, reduced]);
 
-  return { ref, shown, reduced };
+  return { ref, shown: shown || reduced, reduced };
 }
 
 /** Subtle fade (with an optional tiny rise). Use y={0} for opacity only. */

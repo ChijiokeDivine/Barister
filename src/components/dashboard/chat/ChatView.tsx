@@ -150,7 +150,9 @@ export function ChatView({ initial, matters, models, autoQuery, autoMatter, auto
   );
 
   const sendRef = useRef(send);
-  sendRef.current = send;
+  useEffect(() => {
+    sendRef.current = send;
+  }, [send]);
 
   useEffect(() => {
     if (!autoQuery || autoSent.current) return;

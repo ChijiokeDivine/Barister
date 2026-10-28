@@ -100,7 +100,7 @@ export interface ValidationResult {
   order: string[];
 }
 
-export interface RunLogEntry extends LogEntry {}
+export type RunLogEntry = LogEntry;
 
 export interface RunLogPage {
   entries: RunLogEntry[];
