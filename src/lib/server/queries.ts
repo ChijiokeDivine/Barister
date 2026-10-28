@@ -1,5 +1,6 @@
 import type { ActivityItem, Matter, RecentThread, Space } from "@/components/dashboard/types";
 import type { ModelOption } from "@/components/dashboard/types";
+import { connection } from "next/server";
 import { nodeCatalog } from "@/lib/agents/registry";
 import { env } from "@/lib/env";
 import { hashJSON } from "@/lib/hash";
@@ -74,6 +75,7 @@ export interface WorkspaceNav {
 
 /** Everything the sidebar needs: matters, spaces, and the most recent conversations. */
 export async function getWorkspaceNav(): Promise<WorkspaceNav> {
+  await connection();
   const [cs, convs] = await Promise.all([cases.list(), conversations.list()]);
   const matters = cs.map(toMatter);
   return {
@@ -91,11 +93,13 @@ export interface ChatSetup {
 }
 
 export async function getChatSetup(): Promise<ChatSetup> {
+  await connection();
   const [cs, convs] = await Promise.all([cases.list(), conversations.list()]);
   return { matters: cs.map(toMatter), models: modelOptions(), recents: convs.slice(0, 8).map(toConversationSummary) };
 }
 
 export async function getConversationPage(id: string) {
+  await connection();
   const conversation = await conversations.get(id);
   if (!conversation) return null;
   const record = conversation.caseId ? await cases.get(conversation.caseId) : null;
@@ -113,6 +117,7 @@ export interface DashboardData {
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
+  await connection();
   const [cs, docs, wfs, runList, outs] = await Promise.all([cases.list(), documents.list(), workflows.list(), runs.list(), outputs.list()]);
   return {
     matters: cs.map(toMatter),
@@ -145,6 +150,7 @@ export interface CaseWorkspace {
 }
 
 export async function getCaseWorkspace(id: string): Promise<CaseWorkspace | null> {
+  await connection();
   const record = await cases.get(id);
   if (!record) return null;
   const [docs, runList, outList, wfList, convList, anchorList] = await Promise.all([
@@ -182,6 +188,7 @@ export interface VaultData {
 }
 
 export async function getVaultData(caseId?: string | null): Promise<VaultData> {
+  await connection();
   const [docs, cs, anchorList] = await Promise.all([listDocuments(caseId), cases.list(), listAnchors({ refresh: false })]);
   return {
     documents: docs,
@@ -197,6 +204,7 @@ export async function getVaultData(caseId?: string | null): Promise<VaultData> {
 }
 
 export async function getDocumentPage(id: string) {
+  await connection();
   const doc = await documents.get(id);
   if (!doc) return null;
   const [record, anchorList] = await Promise.all([doc.caseId ? cases.get(doc.caseId) : Promise.resolve(null), listAnchors({ refresh: false })]);
@@ -217,6 +225,7 @@ export interface WorkflowsData {
 }
 
 export async function getWorkflowsData(): Promise<WorkflowsData> {
+  await connection();
   const [wfList, runList, cs, outList] = await Promise.all([workflows.list(), runs.list(), cases.list(), outputs.list()]);
   return { workflows: wfList.map(toWorkflowSummary), templates: TEMPLATES, runs: runList.slice(0, 8).map(toRunSummary), matters: cs.map(toMatter), outputs: outList.slice(0, 8).map(toOutputSummary) };
 }
@@ -229,6 +238,7 @@ export interface WorkflowPageData {
 }
 
 export async function getWorkflowPage(id?: string): Promise<WorkflowPageData> {
+  await connection();
   const [wf, cs, runList] = await Promise.all([id ? workflows.get(id) : null, cases.list(), runs.list()]);
   return {
     workflow: wf,
@@ -245,6 +255,7 @@ export interface AgentsData {
 }
 
 export async function getAgentsData(): Promise<AgentsData> {
+  await connection();
   const all = await listRuns();
   const active = all.filter((r) => r.status === "running" || r.status === "queued").slice(0, 10);
   const [cs, outList] = await Promise.all([cases.list(), outputs.list()]);
@@ -275,6 +286,7 @@ export interface RunPageData {
 }
 
 export async function getRunPage(id: string): Promise<RunPageData> {
+  await connection();
   const run = await getRun(id);
   const [logPage, cs, outList, wf] = await Promise.all([
     getLogs(id, 0, 500),
@@ -298,11 +310,13 @@ export interface OutputsData {
 }
 
 export async function getOutputsData(caseId?: string): Promise<OutputsData> {
+  await connection();
   const [outList, cs] = await Promise.all([outputs.list(), cases.list()]);
   return { outputs: outList.filter((o) => !caseId || o.caseId === caseId).map(toOutputSummary), matters: cs.map(toMatter) };
 }
 
 export async function getOutputPage(id: string) {
+  await connection();
   const record = await outputs.get(id);
   if (!record) return null;
   const [raw, recordCase] = await Promise.all([getOutput(id), record.caseId ? cases.get(record.caseId) : Promise.resolve(null)]);
@@ -323,11 +337,13 @@ export interface AuditData {
 }
 
 export async function getAuditData(): Promise<AuditData> {
+  await connection();
   const [anchorList, cs, docs, runList] = await Promise.all([listAnchors({ refresh: true }), cases.list(), documents.list(), runs.list()]);
   return { anchors: anchorList, matters: cs.map(toMatter), documents: docs, runs: runList.map(toRunSummary) };
 }
 
 export async function getSettingsPage() {
+  await connection();
   const [settings, system] = await Promise.all([getSettings(), getSystemStatus()]);
   return { settings, system };
 }
@@ -339,6 +355,7 @@ export interface HistoryData {
 }
 
 export async function getHistoryData(): Promise<HistoryData> {
+  await connection();
   const [convs, runList, cs] = await Promise.all([conversations.list(), runs.list(), cases.list()]);
   return { conversations: convs.map(toConversationSummary), runs: runList.map(toRunSummary), matters: cs.map(toMatter) };
 }
@@ -361,6 +378,7 @@ export interface SearchResults {
 }
 
 export async function searchWorkspace(query: string): Promise<SearchResults> {
+  await connection();
   const q = query.trim().toLowerCase();
   const empty: SearchResults = { query, matters: [], documents: [], workflows: [], outputs: [], conversations: [], total: 0 };
   if (!q) return empty;
