@@ -22,8 +22,10 @@ import { z } from "zod";
 
 // ───────────────────────────── Types & settings ─────────────────────────────
 
-export const ENTITY_TYPES = ["NAME", "EMAIL", "PHONE", "SSN", "CARD", "AMOUNT", "DATE", "ADDRESS", "IP", "URL", "CUSTOM"] as const;
-export type EntityType = (typeof ENTITY_TYPES)[number];
+import { ENTITY_TYPES, type EntityType } from "./entity-types";
+
+export { ENTITY_TYPES };
+export type { EntityType };
 
 export const RedactionSettingsSchema = z.object({
   /** Per-category switch; missing = enabled. */

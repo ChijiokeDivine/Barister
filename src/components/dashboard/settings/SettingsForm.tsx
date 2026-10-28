@@ -5,7 +5,7 @@ import { useState } from "react";
 import { LuPlus, LuSave, LuTrash2 } from "react-icons/lu";
 import { api } from "@/lib/client/api";
 import type { Settings } from "@/lib/services/settings";
-import { ENTITY_TYPES } from "@/lib/redact";
+import { ENTITY_TYPES } from "@/lib/entity-types";
 import { Button } from "../ui/Button";
 import { Checkbox, Field, Input, Label, Select, Textarea } from "../ui/Field";
 
