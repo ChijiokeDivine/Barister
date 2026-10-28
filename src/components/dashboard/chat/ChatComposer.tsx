@@ -182,7 +182,7 @@ export function LauncherComposer({ matters, models, placeholder = "Ask Barister 
       <div className="rounded-2xl border-t border-line bg-canvas px-3 pb-3 pt-3 shadow-[0_1px_0_rgb(0_0_0/0.02)] sm:px-4 sm:pt-3.5">
         <Field value={text} onChange={setText} placeholder={placeholder} onEnter={submit} />
         <div className="mt-6 flex items-center justify-between sm:mt-8">
-          <IconButton label="Add sources" size="sm" className="max-lg:size-8">
+          <IconButton label="Add sources" size="sm" className="max-lg:size-8" onClick={() => router.push("/vault")}>
             <LuPlus />
           </IconButton>
           <div className="flex items-center gap-1">
@@ -190,7 +190,13 @@ export function LauncherComposer({ matters, models, placeholder = "Ask Barister 
             {canSend ? (
               <SendButton />
             ) : (
-              <IconButton label="Dictate" size="sm" className="max-lg:size-8">
+              <IconButton
+                label="Dictation is not available in this deployment"
+                size="sm"
+                disabled
+                title="Dictation is not available in this deployment"
+                className="max-lg:size-8 disabled:cursor-not-allowed disabled:opacity-40"
+              >
                 <LuMic />
               </IconButton>
             )}
@@ -296,7 +302,12 @@ export function MatterComposer({
         {resources && !compact && <ResourceChip {...resources} />}
         <Field value={text} onChange={setText} placeholder={placeholder} onEnter={submit} className={resources && !compact ? "mt-3" : undefined} />
         <div className={cn("flex items-center justify-between", compact ? "mt-5 sm:mt-6" : "mt-6 sm:mt-7")}>
-          <IconButton label="Add sources" size="sm" className="max-lg:size-8">
+          <IconButton
+            label="Add sources"
+            size="sm"
+            className="max-lg:size-8"
+            onClick={() => router.push(`/vault?caseId=${matter.id}`)}
+          >
             <LuPlus />
           </IconButton>
           <div className="flex items-center gap-1.5">
