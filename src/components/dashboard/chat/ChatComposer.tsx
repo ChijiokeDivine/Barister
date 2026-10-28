@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import {
   LuArrowUp,
@@ -16,7 +18,9 @@ import { IconButton } from "../ui/IconButton";
 import { Dropdown, type DropdownOption } from "../ui/Dropdown";
 import { MatterTile } from "../ui/MatterTile";
 import { Tooltip } from "../ui/Tooltip";
-import type { Matter } from "../types";
+import type { Matter, ModelOption } from "../types";
+
+export type Tier = ModelOption["value"];
 
 /* ---------- shared bits ---------- */
 
@@ -49,7 +53,6 @@ interface FieldProps {
   onChange: (v: string) => void;
   placeholder: string;
   onEnter: () => void;
-  minRows?: number;
   max?: number;
   className?: string;
 }
@@ -85,45 +88,65 @@ function Field({ value, onChange, placeholder, onEnter, max = 220, className }: 
   );
 }
 
-function ModeButton() {
+const TIERS: DropdownOption[] = [
+  { value: "auto", label: "Auto routing", hint: "Best available" },
+  { value: "long", label: "Deep context", hint: "Gemini" },
+  { value: "fast", label: "Fast", hint: "Groq" },
+];
+
+function ModeButton({ tier, onChange }: { tier: Tier; onChange: (t: Tier) => void }) {
   return (
-    <Tooltip label="Senior Partner" side="bottom">
-      <IconButton label="Review mode" size="sm" className="max-lg:size-8">
-        <LuSlidersHorizontal />
-      </IconButton>
+    <Tooltip label="Model routing" side="bottom">
+      <Dropdown
+        options={TIERS}
+        value={tier}
+        onChange={(v) => onChange(v as Tier)}
+        placeholder="Auto"
+        align="right"
+        menuClassName="min-w-52"
+        triggerClassName="size-7 justify-center px-0 text-fg-muted max-lg:size-8"
+        renderValue={() => <LuSlidersHorizontal aria-hidden className="size-[15px]" />}
+      />
     </Tooltip>
   );
 }
 
 /* ---------- Launcher variant (home) ---------- */
 
+export interface LauncherPayload {
+  text: string;
+  matterId: string | null;
+  tier: Tier;
+}
+
 interface LauncherProps {
   matters: Matter[];
-  models: readonly string[];
+  models: readonly ModelOption[];
   placeholder?: string;
-  onSubmit?: (payload: { text: string; matterId: string | null; model: string }) => void;
+  onSubmit?: (payload: LauncherPayload) => void;
   className?: string;
 }
 
 /** Home composer: matter + model selectors above a roomy input. */
-export function LauncherComposer({
-  matters,
-  models,
-  placeholder = "Ask Barister anything",
-  onSubmit,
-  className,
-}: LauncherProps) {
+export function LauncherComposer({ matters, models, placeholder = "Ask Barister anything", onSubmit, className }: LauncherProps) {
+  const router = useRouter();
   const [text, setText] = useState("");
-  const [matterId, setMatterId] = useState<string | null>(null);
-  const [model, setModel] = useState<string>(models[0] ?? "");
+  const [matterId, setMatterId] = useState<string | null>(matters[0]?.id ?? null);
+  const [tier, setTier] = useState<Tier>(models[0]?.value ?? "auto");
 
   const matterOptions: DropdownOption[] = matters.map((m) => ({ value: m.id, label: m.name, hint: m.number }));
-  const modelOptions: DropdownOption[] = models.map((m) => ({ value: m, label: m }));
+  const modelOptions: DropdownOption[] = models.map((m) => ({ value: m.value, label: m.label }));
   const canSend = text.trim().length > 0;
 
   const submit = () => {
     if (!canSend) return;
-    onSubmit?.({ text: text.trim(), matterId, model });
+    const payload = { text: text.trim(), matterId, tier };
+    if (onSubmit) onSubmit(payload);
+    else {
+      const params = new URLSearchParams({ q: payload.text, tier: payload.tier });
+      if (payload.matterId) params.set("matter", payload.matterId);
+      router.push(`/chat?${params.toString()}`);
+    }
     setText("");
   };
 
@@ -147,8 +170,8 @@ export function LauncherComposer({
         />
         <Dropdown
           options={modelOptions}
-          value={model}
-          onChange={setModel}
+          value={tier}
+          onChange={(v) => setTier(v as Tier)}
           placeholder="Model"
           align="right"
           icon={<LuSparkles aria-hidden className="size-3.5" />}
@@ -163,7 +186,7 @@ export function LauncherComposer({
             <LuPlus />
           </IconButton>
           <div className="flex items-center gap-1">
-            <ModeButton />
+            <ModeButton tier={tier} onChange={setTier} />
             {canSend ? (
               <SendButton />
             ) : (
@@ -188,7 +211,10 @@ interface MatterComposerProps {
   /** Resource chip (full size only). */
   resources?: { count: number; vaults: number; queries: number };
   size?: "default" | "compact";
-  onSubmit?: (text: string) => void;
+  /** Optional matter switcher (chat page); otherwise the number links to the matter. */
+  matters?: Matter[];
+  onMatterChange?: (id: string) => void;
+  onSubmit?: (payload: { text: string; tier: Tier }) => void;
   className?: string;
 }
 
@@ -199,18 +225,29 @@ export function MatterComposer({
   placeholder = "Ask Barister anything",
   resources,
   size = "default",
+  matters,
+  onMatterChange,
   onSubmit,
   className,
 }: MatterComposerProps) {
+  const router = useRouter();
   const [text, setText] = useState("");
+  const [tier, setTier] = useState<Tier>("auto");
   const compact = size === "compact";
+  const canSend = text.trim().length > 0;
 
   const submit = () => {
     const t = text.trim();
     if (!t) return;
-    onSubmit?.(t);
+    if (onSubmit) onSubmit({ text: t, tier });
+    else {
+      const params = new URLSearchParams({ q: t, tier, matter: matter.id, sources: "vault" });
+      router.push(`/chat?${params.toString()}`);
+    }
     setText("");
   };
+
+  const matterOptions: DropdownOption[] = (matters ?? []).map((m) => ({ value: m.id, label: m.name, hint: m.number }));
 
   return (
     <form
@@ -225,13 +262,30 @@ export function MatterComposer({
       )}
     >
       <div className={cn("flex items-center justify-between gap-3 px-3 sm:px-4", compact ? "h-10" : "h-11")}>
-        <button
-          type="button"
-          className="inline-flex shrink-0 items-center gap-1 rounded-md text-[13px] font-medium text-accent outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
-        >
-          {matter.number}
-          <LuChevronDown aria-hidden className="size-3.5" />
-        </button>
+        {matters && matters.length > 1 && onMatterChange ? (
+          <Dropdown
+            options={matterOptions}
+            value={matter.id}
+            onChange={onMatterChange}
+            placeholder={matter.number}
+            triggerClassName="text-accent font-medium"
+            menuClassName="min-w-72 max-w-[calc(100vw-2rem)]"
+            renderValue={() => (
+              <span className="inline-flex min-w-0 items-center gap-1 text-[13px] font-medium text-accent">
+                <span className="truncate">{matter.number}</span>
+                <LuChevronDown aria-hidden className="size-3.5 shrink-0" />
+              </span>
+            )}
+          />
+        ) : (
+          <Link
+            href={`/cases/${matter.id}`}
+            className="inline-flex shrink-0 items-center gap-1 rounded-md text-[13px] font-medium text-accent outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+          >
+            {matter.number}
+            <LuChevronDown aria-hidden className="size-3.5" />
+          </Link>
+        )}
         <span className="inline-flex min-w-0 items-center gap-2 text-[13px] text-fg-muted">
           <MatterTile initial={spaceName.charAt(0)} tone="teal" size="xs" />
           <span className="truncate">{spaceName}</span>
@@ -246,8 +300,8 @@ export function MatterComposer({
             <LuPlus />
           </IconButton>
           <div className="flex items-center gap-1.5">
-            <ModeButton />
-            <SendButton />
+            <ModeButton tier={tier} onChange={setTier} />
+            <SendButton disabled={!canSend} />
           </div>
         </div>
       </div>

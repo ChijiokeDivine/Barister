@@ -15,12 +15,16 @@ export function ResourceCard({ item }: { item: ResourceItem }) {
       <div>
         <h3 className="truncate text-[13px] font-medium text-fg">{item.title}</h3>
         <p className="mt-1 flex items-center gap-2 text-[12px] text-fg-subtle">
-          <span>{item.files} files</span>
+          <span>
+            {item.files} {item.units?.files ?? "files"}
+          </span>
           <span aria-hidden className="inline-flex items-center gap-1">
             <LuMessageSquare className="size-3" />
             {item.comments}
           </span>
-          <span className="sr-only">{item.comments} comments</span>
+          <span className="sr-only">
+            {item.comments} {item.units?.comments ?? "comments"}
+          </span>
         </p>
       </div>
     </Link>

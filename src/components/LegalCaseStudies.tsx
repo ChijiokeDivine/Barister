@@ -247,7 +247,7 @@ export default function LegalCaseStudies() {
       {/* Footer controls */}
       <div className="mx-auto mt-6 flex max-w-6xl items-center justify-between px-5 md:mt-8 md:px-8">
         <Link
-          href="#"
+          href="/cases"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-white transition hover:text-white/70"
         >
           View all stories

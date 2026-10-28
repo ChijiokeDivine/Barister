@@ -41,13 +41,13 @@ export default function Hero() {
         <FadeIn delay={1300} className="mt-6 md:mt-0">
           <div className="flex flex-col gap-[9px] md:flex-row md:gap-[18px]">
             <Link
-              href="#"
+              href="/workflows"
               className="flex h-12 items-center justify-center border border-[#0f0E0D]/40 text-[17px] font-medium tracking-[-0.01em] transition-colors duration-300 hover:bg-white/5 md:h-[46px] md:w-[141px] text-[#0f0E0D]"
             >
               See workflows
             </Link>
             <Link
-              href="#"
+              href="/dashboard"
               className="flex h-12 items-center justify-center bg-[#0f0E0D] text-[17px] font-medium tracking-[-0.01em] transition-colors duration-300 hover:bg-[#0f0E0D]/90 md:h-[46px] md:w-[141px]"
             >
               Start building

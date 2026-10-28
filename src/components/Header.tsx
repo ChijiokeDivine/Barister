@@ -19,16 +19,16 @@ const MENU: Item[] = [
       {
         label: "Build",
         links: [
-          { label: "Workflow Builder", href: "#" },
-          { label: "Multi-Agent Workflows", href: "#" },
-          { label: "Legal Agent Workspace", href: "#" },
+          { label: "Workflow Builder", href: "/workflows" },
+          { label: "Multi-Agent Workflows", href: "/agents" },
+          { label: "Legal Agent Workspace", href: "/dashboard" },
         ],
       },
       {
         label: "Trust",
         links: [
-          { label: "Data Privacy", href: "#" },
-          { label: "Security", href: "#" },
+          { label: "Data Privacy", href: "/audit-trail" },
+          { label: "Security", href: "/settings" },
         ],
       },
     ],
@@ -40,15 +40,15 @@ const MENU: Item[] = [
       {
         label: "Litigation",
         links: [
-          { label: "Deposition Preparation", href: "#" },
-          { label: "Discovery Analysis", href: "#" },
+          { label: "Deposition Preparation", href: "/cases" },
+          { label: "Discovery Analysis", href: "/vault" },
         ],
       },
       {
         label: "Transactional",
         links: [
-          { label: "Contract Analysis", href: "#" },
-          { label: "Due Diligence", href: "#" },
+          { label: "Contract Analysis", href: "/workflows" },
+          { label: "Due Diligence", href: "/cases" },
         ],
       },
     ],
@@ -113,7 +113,7 @@ export default function Header() {
             );
           })}
           <Link
-            href="#"
+            href="/dashboard"
             onMouseEnter={() => setOpen(null)}
             className="flex h-10 items-center bg-[#f9f7f3] px-[18px] text-[16px] font-medium tracking-[-0.01em] text-[#2b2523] transition-colors hover:bg-white"
           >
@@ -241,7 +241,7 @@ export default function Header() {
           })}
           <li className="border-b-2 border-[#e2d8c0]">
             <Link
-              href="#"
+              href="/dashboard"
               onClick={() => setMenu(false)}
               className="flex h-[69px] items-center text-[28px] tracking-[-0.02em]"
             >

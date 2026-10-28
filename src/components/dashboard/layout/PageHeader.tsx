@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Tabs, type TabItem } from "../ui/Tabs";
@@ -10,6 +11,8 @@ interface PageHeaderProps {
   swatchClassName?: string;
   tabs: TabItem[];
   defaultTab?: string;
+  /** Controlled active tab; when set, the component no longer owns the state. */
+  activeTab?: string;
   onTabChange?: (id: string) => void;
   /** Right-aligned action (e.g. Add members). */
   action?: ReactNode;
@@ -22,11 +25,13 @@ export function PageHeader({
   swatchClassName = "bg-tile-teal",
   tabs,
   defaultTab,
+  activeTab,
   onTabChange,
   action,
   className,
 }: PageHeaderProps) {
-  const [tab, setTab] = useState(defaultTab ?? tabs[0]?.id ?? "");
+  const [internalTab, setInternalTab] = useState(defaultTab ?? tabs[0]?.id ?? "");
+  const tab = activeTab ?? internalTab;
 
   return (
     <header className={cn("relative shrink-0 bg-sage px-4 pb-2 pt-4 sm:px-6 lg:px-10 lg:pb-3 lg:pt-7", className)}>
@@ -44,7 +49,7 @@ export function PageHeader({
         items={tabs}
         value={tab}
         onValueChange={(id) => {
-          setTab(id);
+          if (activeTab === undefined) setInternalTab(id);
           onTabChange?.(id);
         }}
         className="scrollbar-none mx-auto mt-5 w-full max-w-[1120px] overflow-x-auto pb-0.5 sm:mt-6 lg:mt-9 lg:overflow-visible"
@@ -62,5 +67,17 @@ export function HeaderButton({ children, onClick }: { children: ReactNode; onCli
     >
       {children}
     </button>
+  );
+}
+
+/** Same visual treatment as HeaderButton, but navigates. */
+export function HeaderLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="shrink-0 whitespace-nowrap rounded-md bg-white px-2.5 py-1.5 text-[12px] font-medium text-fg shadow-[0_1px_2px_rgb(0_0_0/0.06)] outline-none transition-colors hover:bg-surface focus-visible:ring-2 focus-visible:ring-accent/50 sm:px-3.5 sm:py-2 sm:text-[13px]"
+    >
+      {children}
+    </Link>
   );
 }

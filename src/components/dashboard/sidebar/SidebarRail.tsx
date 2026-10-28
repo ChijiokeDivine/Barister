@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   LuArchive,
@@ -17,7 +18,7 @@ import {
 } from "react-icons/lu";
 import { cn } from "@/lib/cn";
 import { LogoMark } from "../ui/Brand";
-import { currentUser } from "../data/mock";
+import { currentUser } from "@/lib/ui/user";
 
 export type RailKey = "new" | "agents" | "vault" | "more" | "apps" | "spaces" | "pinned" | "recent";
 
@@ -65,6 +66,7 @@ interface Props {
 /** Collapsed icon rail. The logo turns into an expand button on hover/focus. */
 export function SidebarRail({ activeKeys = [], onToggle }: Props) {
   const is = (k: RailKey) => activeKeys.includes(k);
+  const router = useRouter();
 
   return (
     <div className="flex h-full min-h-0 flex-col items-center">
@@ -85,20 +87,21 @@ export function SidebarRail({ activeKeys = [], onToggle }: Props) {
         <RailItem icon={<LuPlus />} label="New" href="/dashboard" active={is("new")} />
         <RailItem icon={<LuBot />} label="Agent" href="/agents" active={is("agents")} />
         <RailItem icon={<LuFolder />} label="Vault" href="/vault" active={is("vault")} />
-        <RailItem icon={<LuBookOpen />} label="More" active={is("more")} />
+        <RailItem icon={<LuBookOpen />} label="More" href="/settings" active={is("more")} />
 
         <hr className="mx-2 my-2 border-sidebar-line" />
 
-        <RailItem icon={<LuEllipsis />} label="Apps" active={is("apps")} />
+        <RailItem icon={<LuEllipsis />} label="Apps" href="/workflows" active={is("apps")} />
         <RailItem icon={<LuArchive />} label="Spaces" href="/cases" active={is("spaces")} />
-        <RailItem icon={<LuPin />} label="Pinned" active={is("pinned")} />
-        <RailItem icon={<LuClock />} label="Recent" href="/chat" active={is("recent")} />
+        <RailItem icon={<LuPin />} label="Pinned" href="/chat" active={is("pinned")} />
+        <RailItem icon={<LuClock />} label="Recent" href="/history" active={is("recent")} />
       </nav>
 
       <div className="flex shrink-0 flex-col items-center gap-1 pb-3 pt-2">
         <button
           type="button"
           aria-label="Notifications"
+          onClick={() => router.push("/agents")}
           className="inline-flex size-8 items-center justify-center rounded-md text-[16px] text-sidebar-muted outline-none transition-colors hover:bg-sidebar-hover hover:text-sidebar-fg focus-visible:ring-2 focus-visible:ring-white/25"
         >
           <LuBell />
@@ -106,6 +109,7 @@ export function SidebarRail({ activeKeys = [], onToggle }: Props) {
         <button
           type="button"
           aria-label="Search"
+          onClick={() => router.push("/search")}
           className="inline-flex size-8 items-center justify-center rounded-md text-[16px] text-sidebar-muted outline-none transition-colors hover:bg-sidebar-hover hover:text-sidebar-fg focus-visible:ring-2 focus-visible:ring-white/25"
         >
           <LuSearch />
@@ -113,6 +117,7 @@ export function SidebarRail({ activeKeys = [], onToggle }: Props) {
         <button
           type="button"
           aria-label={`${currentUser.name} account`}
+          onClick={() => router.push("/settings")}
           className="mt-1 inline-flex size-6 items-center justify-center rounded-full bg-white text-[11px] font-semibold text-black outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         >
           {currentUser.initial}

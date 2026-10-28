@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { LuBell, LuMenu, LuSearch } from "react-icons/lu";
 import { cn } from "@/lib/cn";
-import { currentUser } from "../data/mock";
+import { currentUser } from "@/lib/ui/user";
+import type { ShellData } from "../types";
 import { AppSidebar, type SidebarVariant } from "../sidebar/AppSidebar";
 import type { RailKey } from "../sidebar/SidebarRail";
 import { Wordmark } from "../ui/Brand";
@@ -20,7 +21,10 @@ interface RouteDefaults {
 function defaultsFor(pathname: string): RouteDefaults {
   if (pathname.startsWith("/cases/")) return { variant: "space", collapsed: false, railActive: ["spaces"] };
   if (pathname.startsWith("/cases")) return { variant: "workspace", collapsed: true, railActive: ["spaces"] };
-  if (pathname.startsWith("/chat")) return { variant: "workspace", collapsed: true, railActive: ["spaces"] };
+  if (pathname.startsWith("/chat")) return { variant: "workspace", collapsed: true, railActive: ["recent"] };
+  if (pathname.startsWith("/workflows")) return { variant: "workspace", collapsed: true, railActive: ["apps"] };
+  if (pathname.startsWith("/agents") || pathname.startsWith("/runs")) return { variant: "workspace", collapsed: true, railActive: ["agents"] };
+  if (pathname.startsWith("/vault")) return { variant: "workspace", collapsed: true, railActive: ["vault"] };
   return { variant: "workspace", collapsed: false, railActive: ["new"] };
 }
 
@@ -28,6 +32,7 @@ const STORAGE_KEY = "barister.sidebar.collapsed";
 const DESKTOP_QUERY = "(min-width: 1024px)";
 
 interface SidebarControllerProps {
+  nav: ShellData;
   mobileOpen: boolean;
   onMobileOpenChange: (open: boolean) => void;
 }
@@ -37,7 +42,7 @@ interface SidebarControllerProps {
  * keeps it isolated behind the Suspense boundary below, so pages with an
  * unknown dynamic param can still prerender their content.
  */
-function SidebarController({ mobileOpen, onMobileOpenChange }: SidebarControllerProps) {
+function SidebarController({ nav, mobileOpen, onMobileOpenChange }: SidebarControllerProps) {
   const pathname = usePathname();
   const defaults = defaultsFor(pathname);
   // null = follow the route default, boolean = user's explicit choice.
@@ -104,12 +109,18 @@ function SidebarController({ mobileOpen, onMobileOpenChange }: SidebarController
     return () => window.removeEventListener("keydown", onKey);
   }, [toggleNavigation]);
 
+  const activeCaseId = pathname.startsWith("/cases/") ? pathname.split("/")[2] : undefined;
+  const activeSpaceName = activeCaseId ? nav.matters.find((m) => m.id === activeCaseId)?.name : undefined;
+
   return (
     <AppSidebar
       variant={defaults.variant}
       collapsed={collapsed}
       onToggle={toggleNavigation}
       railActive={defaults.railActive}
+      nav={nav}
+      activeCaseId={activeCaseId}
+      activeSpaceName={activeSpaceName}
       mobileOpen={mobileOpen}
       onNavigate={() => onMobileOpenChange(false)}
     />
@@ -126,7 +137,7 @@ function SidebarFallback() {
  * Dashboard frame: sidebar + scrolling main area.
  * Below `lg` the sidebar becomes an off-canvas drawer with a compact top bar.
  */
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ nav, children }: { nav: ShellData; children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Escape closes the mobile drawer only.
@@ -151,7 +162,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       )}
 
       <Suspense fallback={<SidebarFallback />}>
-        <SidebarController mobileOpen={mobileOpen} onMobileOpenChange={setMobileOpen} />
+        <SidebarController nav={nav} mobileOpen={mobileOpen} onMobileOpenChange={setMobileOpen} />
       </Suspense>
 
       <main
@@ -184,29 +195,28 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex shrink-0 items-center gap-0.5">
-            <button
-              type="button"
+            <Link
+              href="/search"
               aria-label="Search"
               className="inline-flex size-10 items-center justify-center rounded-lg text-[18px] text-fg-muted outline-none transition-colors hover:bg-surface-strong hover:text-fg focus-visible:ring-2 focus-visible:ring-accent/40"
             >
               <LuSearch aria-hidden />
-            </button>
-            <span className="relative">
-              <button
-                type="button"
-                aria-label="Notifications"
-                className="inline-flex size-10 items-center justify-center rounded-lg text-[18px] text-fg-muted outline-none transition-colors hover:bg-surface-strong hover:text-fg focus-visible:ring-2 focus-visible:ring-accent/40"
-              >
-                <LuBell aria-hidden />
-              </button>
+            </Link>
+            <Link
+              href="/agents"
+              aria-label="Notifications"
+              className="relative inline-flex size-10 items-center justify-center rounded-lg text-[18px] text-fg-muted outline-none transition-colors hover:bg-surface-strong hover:text-fg focus-visible:ring-2 focus-visible:ring-accent/40"
+            >
+              <LuBell aria-hidden />
               <span aria-hidden className="absolute right-2 top-2 size-1.5 rounded-full bg-red-500 ring-2 ring-canvas" />
-            </span>
-            <span
-              aria-hidden
+            </Link>
+            <Link
+              href="/settings"
+              aria-label={`${currentUser.name} account`}
               className="ml-1 inline-flex size-7 items-center justify-center rounded-full bg-sidebar text-[11px] font-semibold text-sidebar-fg"
             >
               {currentUser.initial}
-            </span>
+            </Link>
           </div>
         </header>
 

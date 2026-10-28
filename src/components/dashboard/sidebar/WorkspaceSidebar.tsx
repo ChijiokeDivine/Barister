@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LuBell,
   LuBriefcase,
@@ -17,17 +17,21 @@ import {
 } from "react-icons/lu";
 import { IconButton } from "../ui/IconButton";
 import { Wordmark } from "../ui/Brand";
-import { pinned, recents, spaces } from "../data/mock";
-import { currentUser } from "../data/mock";
+import type { RecentThread, Space } from "../types";
+import { currentUser } from "@/lib/ui/user";
 import { SidebarNavItem, SidebarSectionLabel, SpaceSwatch, ThreadRow } from "./primitives";
 
 interface Props {
+  spaces: Space[];
+  recents: RecentThread[];
+  pinned: RecentThread[];
   onToggle: () => void;
 }
 
 /** Expanded sidebar for the home screen: threads, apps, pinned and spaces. */
-export function WorkspaceSidebar({ onToggle }: Props) {
+export function WorkspaceSidebar({ spaces, recents, pinned, onToggle }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -37,12 +41,12 @@ export function WorkspaceSidebar({ onToggle }: Props) {
         </Link>
         <div className="flex items-center gap-0.5">
           <span className="relative">
-            <IconButton label="Notifications" tone="dark" size="sm">
+            <IconButton label="Notifications" tone="dark" size="sm" onClick={() => router.push("/agents")}>
               <LuBell />
             </IconButton>
             <span aria-hidden className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-red-500 ring-2 ring-sidebar" />
           </span>
-          <IconButton label="Search" tone="dark" size="sm">
+          <IconButton label="Search" tone="dark" size="sm" onClick={() => router.push("/search")}>
             <LuSearch />
           </IconButton>
           <span className="lg:hidden">
@@ -62,21 +66,29 @@ export function WorkspaceSidebar({ onToggle }: Props) {
         <SidebarNavItem boxedIcon icon={<LuPlus />} label="New Thread" href="/dashboard" active={pathname === "/dashboard"} />
         <SidebarNavItem icon={<LuBot />} label="Agents" href="/agents" active={pathname.startsWith("/agents")} />
         <SidebarNavItem icon={<LuFolder />} label="Vaults" href="/vault" active={pathname.startsWith("/vault")} />
-        <SidebarNavItem icon={<LuEllipsis />} label="More" />
+        <SidebarNavItem icon={<LuEllipsis />} label="More" href="/settings" active={pathname.startsWith("/settings")} />
 
         <SidebarSectionLabel>Apps</SidebarSectionLabel>
-        <SidebarNavItem icon={<LuLayers />} label="Contract Intelligence" href="/workflows" />
+        <SidebarNavItem icon={<LuLayers />} label="Contract Intelligence" href="/workflows" active={pathname.startsWith("/workflows")} />
 
-        <SidebarSectionLabel>Recents</SidebarSectionLabel>
-        {recents.slice(0, 3).map((t) => (
-          <ThreadRow key={t.id} thread={t} />
-        ))}
-        <SidebarNavItem icon={<LuClock />} label="View History" className="mt-0.5" />
+        {recents.length > 0 && (
+          <>
+            <SidebarSectionLabel>Recents</SidebarSectionLabel>
+            {recents.slice(0, 3).map((t) => (
+              <ThreadRow key={t.id} thread={t} />
+            ))}
+            <SidebarNavItem icon={<LuClock />} label="View History" href="/history" active={pathname.startsWith("/history")} className="mt-0.5" />
+          </>
+        )}
 
-        <SidebarSectionLabel>Pinned</SidebarSectionLabel>
-        {pinned.map((t) => (
-          <ThreadRow key={t.id} thread={t} />
-        ))}
+        {pinned.length > 0 && (
+          <>
+            <SidebarSectionLabel>Pinned</SidebarSectionLabel>
+            {pinned.map((t) => (
+              <ThreadRow key={t.id} thread={t} />
+            ))}
+          </>
+        )}
 
         <SidebarSectionLabel>Spaces</SidebarSectionLabel>
         {spaces.map((s) => (
@@ -88,12 +100,12 @@ export function WorkspaceSidebar({ onToggle }: Props) {
             active={pathname === s.href}
           />
         ))}
-        <SidebarNavItem icon={<LuBriefcase />} label="View Spaces" href="/cases" />
+        <SidebarNavItem icon={<LuBriefcase />} label="View Spaces" href="/cases" active={pathname.startsWith("/cases")} />
       </nav>
 
       <div className="shrink-0 border-t border-sidebar-line p-3">
-        <button
-          type="button"
+        <Link
+          href="/settings"
           className="flex h-9 w-full items-center gap-2.5 rounded-md px-2 text-left text-[13px] text-sidebar-fg outline-none transition-colors hover:bg-sidebar-hover focus-visible:ring-2 focus-visible:ring-white/25"
         >
           <span
@@ -103,7 +115,7 @@ export function WorkspaceSidebar({ onToggle }: Props) {
             {currentUser.initial}
           </span>
           <span className="truncate">{currentUser.name}</span>
-        </button>
+        </Link>
       </div>
     </div>
   );

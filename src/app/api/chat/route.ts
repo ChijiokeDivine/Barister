@@ -10,6 +10,10 @@ const Body = z.object({
   caseId: z.string().nullish(),
   /** Documents (from the vault) attached to this conversation. Sent redacted to the model. */
   docIds: z.array(z.string()).max(50).optional(),
+  /** Explicit model routing; "auto" keeps the server-side heuristic. */
+  tier: z.enum(["auto", "long", "fast"]).optional(),
+  /** Grounding sources the attorney enabled. */
+  sources: z.array(z.enum(["vault", "playbooks", "web", "caselaw"])).max(4).optional(),
 });
 
 /**

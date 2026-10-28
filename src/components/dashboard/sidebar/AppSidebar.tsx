@@ -2,6 +2,7 @@
 
 import type { MouseEvent } from "react";
 import { cn } from "@/lib/cn";
+import type { ShellData } from "../types";
 import { SidebarRail, type RailKey } from "./SidebarRail";
 import { SpaceSidebar } from "./SpaceSidebar";
 import { WorkspaceSidebar } from "./WorkspaceSidebar";
@@ -15,6 +16,10 @@ interface AppSidebarProps {
   onToggle: () => void;
   /** Highlighted items in the collapsed rail. */
   railActive?: RailKey[];
+  nav: ShellData;
+  /** Name of the matter currently open (space variant footer). */
+  activeSpaceName?: string;
+  activeCaseId?: string;
   className?: string;
   /** Below `lg`: whether the off-canvas drawer is showing. */
   mobileOpen?: boolean;
@@ -34,6 +39,9 @@ export function AppSidebar({
   collapsed,
   onToggle,
   railActive,
+  nav,
+  activeSpaceName,
+  activeCaseId,
   className,
   mobileOpen = false,
   onNavigate,
@@ -69,7 +77,11 @@ export function AppSidebar({
 
       {/* Expanded layout: always on mobile, only when expanded on desktop. */}
       <div className={cn("h-full w-full", collapsed && "lg:hidden")}>
-        {variant === "space" ? <SpaceSidebar onToggle={onToggle} /> : <WorkspaceSidebar onToggle={onToggle} />}
+        {variant === "space" && activeSpaceName && activeCaseId ? (
+          <SpaceSidebar spaces={nav.spaces} recents={nav.recents} activeSpaceName={activeSpaceName} caseId={activeCaseId} onToggle={onToggle} />
+        ) : (
+          <WorkspaceSidebar spaces={nav.spaces} recents={nav.recents} pinned={nav.pinned} onToggle={onToggle} />
+        )}
       </div>
     </aside>
   );

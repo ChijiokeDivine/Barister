@@ -39,4 +39,18 @@ export interface ResourceItem {
   files: number;
   comments: number;
   href: string;
+  /** Optional unit labels so the same card can show nodes/runs or files/anchors. */
+  units?: { files: string; comments: string };
+}
+
+export interface ModelOption {
+  value: "auto" | "long" | "fast";
+  label: string;
+}
+
+export interface ShellData {
+  matters: Matter[];
+  spaces: Space[];
+  recents: RecentThread[];
+  pinned: RecentThread[];
 }

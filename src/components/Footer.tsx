@@ -6,8 +6,8 @@ const noiseTexture =
 
 const exploreLinks = [
   { label: "Overview", href: "#top" },
-  { label: "Platform", href: "#platform" },
-  { label: "Customer stories", href: "#stories" },
+  { label: "Platform", href: "/workflows" },
+  { label: "Customer stories", href: "/cases" },
 ];
 
 export default function Footer() {
@@ -30,7 +30,7 @@ export default function Footer() {
             </h2>
           </div>
           <Link
-            href="#get-started"
+            href="/dashboard"
             className="inline-flex w-fit items-center gap-3 border border-[#F4F0E8]/35 px-5 py-3 text-sm transition-colors hover:border-[#F4F0E8] hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C9A982]"
           >
             Request a demo
@@ -76,7 +76,7 @@ export default function Footer() {
               Get started
             </h3>
             <Link
-              href="#get-started"
+              href="/dashboard"
               className="inline-flex items-center gap-2 text-sm text-[#F4F0E8]/80 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C9A982]"
             >
               Talk to our team

@@ -16,6 +16,7 @@ import { getCase } from "./cases";
 import { loadRedactedDocs } from "./documents";
 import { detectWorkflowIntent, generateWorkflow } from "./generate";
 import { buildRedactor, persistVault } from "./redaction";
+import { getSettings } from "./settings";
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -52,7 +53,13 @@ export interface ChatTurn {
   caseId?: string | null;
   docIds?: string[];
   message: string;
+  /** Model routing override. "auto" keeps the context-size heuristic. */
+  tier?: "auto" | "long" | "fast";
+  /** Which grounding sources the attorney enabled. Only vault + playbooks are wired in this deployment. */
+  sources?: ChatSource[];
 }
+
+export type ChatSource = "vault" | "playbooks" | "web" | "caselaw";
 
 type Send = (event: string, data: unknown) => void;
 
@@ -64,7 +71,8 @@ export async function chatTurn(turn: ChatTurn, send: Send, signal: AbortSignal):
   const conv: Conversation =
     existing ?? { id: newId("chat"), caseId, title: truncate(turn.message.replace(/\s+/g, " "), 60), docIds: [], messages: [], createdAt: nowIso(), updatedAt: nowIso() };
   if (turn.docIds) conv.docIds = turn.docIds; // the UI sends the current attachment selection each turn
-  send("meta", { conversationId: conv.id, caseId });
+  const activeSources: ChatSource[] = turn.sources?.length ? turn.sources : ["vault"];
+  send("meta", { conversationId: conv.id, caseId, sources: activeSources });
 
   const redactor = await buildRedactor(caseId);
   const llm = new LLMRouter({ outbound: makeOutboundGuard(redactor) });
@@ -85,11 +93,18 @@ export async function chatTurn(turn: ChatTurn, send: Send, signal: AbortSignal):
     }
 
     // ── 2. Grounded answer ──
-    const docs = conv.docIds.length ? await loadRedactedDocs(conv.docIds, caseId) : [];
+    const useVault = activeSources.includes("vault");
+    const docs = useVault
+      ? conv.docIds.length
+        ? await loadRedactedDocs(conv.docIds, caseId)
+        : caseId
+          ? await loadRedactedDocs(undefined, caseId)
+          : []
+      : [];
     const fastBudget = Math.floor(env().GROQ_MAX_CONTEXT_CHARS * 0.6);
     const docChars = docs.reduce((n, d) => n + d.text.length, 0);
-    // Big attachments don't fit Groq's window → use the long-context model for this turn.
-    const tier = docChars > fastBudget ? "long" : "fast";
+    // Explicit routing wins; "auto" keeps the context-size heuristic (big attachments don't fit Groq's window).
+    const tier = turn.tier && turn.tier !== "auto" ? turn.tier : docChars > fastBudget ? "long" : "fast";
     const budget = tier === "long" ? 900_000 : fastBudget;
     let remaining = budget;
     const docBlock = docs
@@ -101,13 +116,24 @@ export async function chatTurn(turn: ChatTurn, send: Send, signal: AbortSignal):
       .join("\n\n");
     if (docChars > budget) send("status", { stage: "context_truncated", included: budget, total: docChars });
 
+    let system = SYSTEM;
+    if (activeSources.includes("playbooks")) {
+      const playbook = (await getSettings()).playbook;
+      if (playbook.length) {
+        const block = playbook
+          .map((r) => `- ${r.clause}: preferred = ${r.preferred}${r.fallback ? `; fallback = ${r.fallback}` : ""}${r.redLine ? `; RED LINE = ${r.redLine}` : ""}`)
+          .join("\n");
+        system += `\n\nFIRM PLAYBOOK (apply when relevant; never quote it verbatim unless asked):\n${redactor.redact(block).text}`;
+      }
+    }
+
     const history = conv.messages.slice(-21, -1).map((m) => ({ role: m.role, content: redactor.redact(m.content).text }));
     const messages = [...history, { role: "user" as const, content: `${docBlock ? `DOCUMENTS:\n${docBlock}\n\n---\n\n` : ""}${redactor.redact(turn.message).text}` }];
 
     // Rehydrate as tokens stream in (holds back a small tail so tokens split across chunks still match).
     const restorer = redactor.stream();
     let answer = "";
-    for await (const chunk of llm.stream({ system: SYSTEM, messages, temperature: 0.3, maxOutputTokens: 4_096, signal }, { tier, where: "chat" })) {
+    for await (const chunk of llm.stream({ system, messages, temperature: 0.3, maxOutputTokens: 4_096, signal }, { tier, where: "chat" })) {
       const out = restorer.push(chunk);
       if (out) {
         answer += out;
