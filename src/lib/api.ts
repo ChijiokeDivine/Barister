@@ -6,6 +6,7 @@
  *   failure → { error: { code, message, details? } }   (HTTP 4xx/5xx)
  */
 import { z, ZodError } from "zod";
+import { unstable_rethrow } from "next/navigation";
 import { requireAuth } from "./auth";
 import { ApiError, badRequest } from "./errors";
 
@@ -35,6 +36,7 @@ export function route<P extends Params = Params>(handler: Handler<P>, opts: { au
       const out = await handler(req, { params: await ctx.params });
       return out instanceof Response ? out : json(out ?? { ok: true });
     } catch (e) {
+      unstable_rethrow(e);
       return errorResponse(e);
     }
   };
