@@ -82,3 +82,31 @@ body {
   display: none;
 }
 
+/* Large, high-contrast zoom controls for the workflow canvas. */
+.barister-flow-controls {
+  overflow: hidden;
+  border: 1px solid #d9d6d0;
+  border-radius: 10px;
+  background: var(--color-canvas);
+  box-shadow: 0 2px 8px rgb(20 20 20 / 0.12);
+}
+.barister-flow-controls .react-flow__controls-button {
+  width: 36px;
+  height: 36px;
+  background: var(--color-canvas);
+  border: 0;
+  border-bottom: 1px solid #e9e8e5;
+  color: var(--color-fg);
+}
+.barister-flow-controls .react-flow__controls-button:last-child {
+  border-bottom: 0;
+}
+.barister-flow-controls .react-flow__controls-button:hover {
+  background: var(--color-surface-strong);
+  color: var(--color-accent);
+}
+.barister-flow-controls .react-flow__controls-button svg {
+  max-width: 16px;
+  max-height: 16px;
+  fill: currentColor;
+}

@@ -5,23 +5,9 @@ import { useState } from "react";
 import { LuPlus, LuSave, LuTrash2 } from "react-icons/lu";
 import { api } from "@/lib/client/api";
 import type { Settings } from "@/lib/services/settings";
-import { ENTITY_TYPES } from "@/lib/entity-types";
+import { ENTITY_LABELS, ENTITY_TYPES } from "@/lib/entity-types";
 import { Button } from "../ui/Button";
 import { Checkbox, Field, Input, Label, Select, Textarea } from "../ui/Field";
-
-const ENTITY_LABELS: Record<(typeof ENTITY_TYPES)[number], string> = {
-  NAME: "Names",
-  EMAIL: "Emails",
-  PHONE: "Phone numbers",
-  SSN: "Social security numbers",
-  CARD: "Card numbers",
-  AMOUNT: "Amounts",
-  DATE: "Dates",
-  ADDRESS: "Addresses",
-  IP: "IP addresses",
-  URL: "URLs",
-  CUSTOM: "Custom patterns",
-};
 
 const DATE_MODES = [
   { value: "shift", label: "Shift consistently per matter" },

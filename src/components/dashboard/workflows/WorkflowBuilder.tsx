@@ -8,9 +8,11 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactN
 import {
   Background,
   Controls,
+  Handle,
   MarkerType,
   MiniMap,
   Panel as FlowPanel,
+  Position,
   ReactFlow,
   addEdge,
   useEdgesState,
@@ -85,14 +87,20 @@ function StepNode({ data, selected }: NodeProps<BuilderNode>) {
   return (
     <div
       className={cn(
-        "relative w-[210px] rounded-lg border bg-canvas px-3 py-2.5 shadow-[0_1px_2px_rgb(0_0_0/0.06)] transition-colors",
-        selected ? "border-accent ring-2 ring-accent/20" : "border-line",
+        "relative w-[210px] rounded-lg border px-3 py-2.5 shadow-[0_2px_6px_rgb(0_0_0/0.08)] transition-colors",
+        selected ? "border-accent bg-canvas ring-2 ring-accent/25" : "border-[#d6d2cb] bg-[#faf9f6]",
         data.invalid && "border-red-300",
       )}
     >
-      {!data.isSource && <span className="absolute -left-1.5 top-1/2 size-3 -translate-y-1/2 rounded-full border-2 border-canvas bg-fg-subtle" />}
+      {!data.isSource && (
+        <Handle
+          type="target"
+          position={Position.Left}
+          className="!left-[-7px] !size-3 !border-2 !border-canvas !bg-fg-subtle"
+        />
+      )}
       <div className="flex items-start gap-2">
-        <span aria-hidden className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-surface text-[12px] text-fg-muted">
+        <span aria-hidden className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-md bg-canvas text-[12px] text-fg-muted">
           {TYPE_ICON[data.nodeType] ?? <LuLayers />}
         </span>
         <div className="min-w-0">
@@ -101,7 +109,13 @@ function StepNode({ data, selected }: NodeProps<BuilderNode>) {
         </div>
       </div>
       {data.invalid && <p className="mt-1 text-[10.5px] font-medium text-red-600">Needs attention</p>}
-      {!data.terminal && <span className="absolute -right-1.5 top-1/2 size-3 -translate-y-1/2 rounded-full border-2 border-canvas bg-accent" />}
+      {!data.terminal && (
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="!right-[-7px] !size-3 !border-2 !border-canvas !bg-accent"
+        />
+      )}
     </div>
   );
 }
@@ -164,7 +178,7 @@ function autoLayout(nodes: BuilderNode[], edges: Edge[]): BuilderNode[] {
     const l = level.get(n.id) ?? 0;
     const r = rows.get(l) ?? 0;
     rows.set(l, r + 1);
-    return { ...n, position: { x: 60 + l * 290, y: 50 + r * 150 } };
+    return { ...n, position: { x: 60 + l * 250, y: 50 + r * 140 } };
   });
 }
 
@@ -293,7 +307,7 @@ export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, d
     const node: BuilderNode = {
       id,
       type: "barister",
-      position: { x: 80 + (nodes.length % 3) * 280, y: 60 + Math.floor(nodes.length / 3) * 150 },
+      position: { x: 80 + (nodes.length % 3) * 250, y: 60 + Math.floor(nodes.length / 3) * 140 },
       data: {
         label: def.label,
         config: defaultConfig(def),
@@ -480,9 +494,9 @@ export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, d
                       type="button"
                       onClick={() => addNode(item)}
                       title={item.description}
-                      className="group flex items-center gap-2 rounded-md border border-transparent px-1.5 py-1.5 text-left outline-none transition-colors hover:border-line hover:bg-surface focus-visible:ring-2 focus-visible:ring-accent/40"
+                      className="group flex items-center gap-2 rounded-md border border-[#e2dfda] bg-[#faf9f6] px-2 py-2 text-left outline-none transition-colors hover:border-accent/40 hover:bg-surface focus-visible:ring-2 focus-visible:ring-accent/40"
                     >
-                      <span aria-hidden className="inline-flex size-6 shrink-0 items-center justify-center rounded bg-surface text-[12px] text-fg-muted group-hover:bg-canvas">
+                      <span aria-hidden className="inline-flex size-6 shrink-0 items-center justify-center rounded bg-canvas text-[12px] text-fg-muted group-hover:bg-surface-strong">
                         {TYPE_ICON[item.type] ?? <LuLayers />}
                       </span>
                       <span className="min-w-0 flex-1">
@@ -514,13 +528,14 @@ export function WorkflowBuilder({ mode, workflowId, initial, catalog, matters, d
                 setSelectedId(null);
               }}
               fitView
-              minZoom={0.25}
+              fitViewOptions={{ padding: 0.12, maxZoom: 1 }}
+              minZoom={0.2}
               maxZoom={1.6}
               proOptions={{ hideAttribution: true }}
               className="[--xy-background-color:var(--color-canvas)]"
             >
               <Background gap={18} size={1} color="#e5e4e1" />
-              <Controls showInteractive={false} />
+              <Controls showInteractive={false} className="barister-flow-controls" />
               <MiniMap pannable zoomable className="!bg-canvas" maskColor="rgb(246 245 243 / 0.7)" />
               {!nodes.length && (
                 <FlowPanel position="top-center" className="!m-0 !mt-16">

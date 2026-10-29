@@ -56,7 +56,7 @@ export function autoLayout(graph: WorkflowGraph): WorkflowGraph {
       const l = level.get(n.id) ?? 0;
       const r = rows.get(l) ?? 0;
       rows.set(l, r + 1);
-      return { ...n, position: { x: l * 300, y: r * 160 } };
+      return { ...n, position: { x: 60 + l * 250, y: 50 + r * 140 } };
     }),
     edges: graph.edges.map((e) => ({ ...e, id: e.id ?? `e_${e.source}_${e.target}` })),
   };

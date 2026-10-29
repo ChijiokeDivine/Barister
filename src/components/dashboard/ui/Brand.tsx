@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 /** Serif wordmark used in the expanded sidebar. */
 export function Wordmark({ className }: { className?: string }) {
   return (
-    <span className={cn("font-serif text-[22px] leading-none tracking-[-0.01em]", className)}>
+    <span className={cn("font-serif text-[22px] leading-none tracking-[-0.01em] text-[#000000]", className)}>
       Barister
     </span>
   );
@@ -19,7 +19,7 @@ export function LogoMark({ className }: { className?: string }) {
         className,
       )}
     >
-      V
+      B
     </span>
   );
 }

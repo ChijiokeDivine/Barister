@@ -6,6 +6,8 @@ import { ResourceSection } from "@/components/dashboard/cards/ResourceSection";
 import { CaseHeader } from "@/components/dashboard/cases/CaseHeader";
 import { MatterComposer } from "@/components/dashboard/chat/ChatComposer";
 import { HeaderLink } from "@/components/dashboard/layout/PageHeader";
+import { KnownTermsEditor } from "@/components/dashboard/redaction/KnownTermsEditor";
+import { RedactionPreview } from "@/components/dashboard/redaction/RedactionPreview";
 import { Badge } from "@/components/dashboard/ui/Badge";
 import { EmptyState } from "@/components/dashboard/ui/EmptyState";
 import { DataRow, Panel, RowItem, RowList, Stat } from "@/components/dashboard/ui/Panel";
@@ -21,6 +23,7 @@ const tabs = [
   { id: "tasks", label: "Tasks" },
   { id: "agents", label: "Agents" },
   { id: "vault", label: "Vault" },
+  { id: "redaction", label: "Redaction" },
   { id: "tools", label: "Tools" },
   { id: "activity", label: "Activity" },
 ];
@@ -209,6 +212,20 @@ export default async function CasePage({ params, searchParams }: Props) {
                 <EmptyState icon={<LuFolder />} title="Vault is empty" description="Upload documents to redact and ground this matter." action={<HeaderLink href={`/vault?caseId=${data.record.id}`}>Upload documents</HeaderLink>} />
               )}
             </Panel>
+          )}
+
+          {tab === "redaction" && (
+            <div className="space-y-5">
+              <Panel
+                title="Known terms"
+                description="Parties, witnesses and companies that must always be masked. Exact matches beat the heuristic name detector."
+              >
+                <KnownTermsEditor caseId={data.record.id} initial={data.record.knownTerms} />
+              </Panel>
+              <Panel title="Live redaction preview" description="The same redactor the vault runs on upload. Nothing here is stored.">
+                <RedactionPreview caseId={data.record.id} />
+              </Panel>
+            </div>
           )}
 
           {tab === "tools" && (
