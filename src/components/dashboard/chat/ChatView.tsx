@@ -3,14 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { LuArrowUp, LuBot, LuBriefcase, LuPlus, LuSlidersHorizontal, LuSparkles, LuSquare, LuTrash2, LuWand } from "react-icons/lu";
+import { LuArrowUp, LuBot, LuBriefcase, LuPencil, LuPlus, LuSlidersHorizontal, LuSparkles, LuSquare, LuTrash2, LuWand } from "react-icons/lu";
 import { cn } from "@/lib/cn";
 import { api, sse } from "@/lib/client/api";
 import type { ChatMessageDTO } from "@/lib/ui/types";
 import type { Matter, ModelOption } from "../types";
+import { Button } from "../ui/Button";
 import { Dropdown, type DropdownOption } from "../ui/Dropdown";
 import { IconButton } from "../ui/IconButton";
 import { MatterTile } from "../ui/MatterTile";
+import { Markdown } from "./Markdown";
 import { QuickSources } from "./QuickSources";
 import { DEFAULT_SOURCES, QUICK_SOURCES, type SourceId } from "./sources";
 
@@ -63,6 +65,8 @@ export function ChatView({ initial, matters, models, autoQuery, autoMatter, auto
   const [streaming, setStreaming] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /** Inline editor for a user message: index in `messages` plus the working draft. */
+  const [editing, setEditing] = useState<{ index: number; draft: string } | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -71,19 +75,24 @@ export function ChatView({ initial, matters, models, autoQuery, autoMatter, auto
   const modelOptions: DropdownOption[] = models.length ? models.map((m) => ({ value: m.value, label: m.label })) : TIERS;
 
   const send = useCallback(
-    (raw: string) => {
+    (raw: string, editIndex?: number) => {
       const message = raw.trim();
       if (!message || streaming) return;
       setError(null);
       setStatus(null);
+      setEditing(null);
       setText("");
       setStreaming(true);
-      setMessages((prev) => [
-        ...prev,
-        { role: "user", content: message, ts: new Date().toISOString() },
-        { role: "assistant", content: "", ts: new Date().toISOString() },
-      ]);
-      if (!title) setTitle(message.replace(/\s+/g, " ").slice(0, 60));
+      // Editing rewinds the thread to (but not including) that user message; the turn below replaces it.
+      setMessages((prev) => {
+        const base = editIndex === undefined ? prev : prev.slice(0, editIndex);
+        return [
+          ...base,
+          { role: "user", content: message, ts: new Date().toISOString() },
+          { role: "assistant", content: "", ts: new Date().toISOString() },
+        ];
+      });
+      if (!title || editIndex === 0) setTitle(message.replace(/\s+/g, " ").slice(0, 60));
 
       const controller = new AbortController();
       abortRef.current = controller;
@@ -101,7 +110,7 @@ export function ChatView({ initial, matters, models, autoQuery, autoMatter, auto
         "/api/chat",
         {
           method: "POST",
-          json: { message, conversationId: conversationId ?? undefined, caseId, tier, sources, docIds: initial?.docIds },
+          json: { message, conversationId: conversationId ?? undefined, caseId, tier, sources, docIds: initial?.docIds, editIndex },
         },
         {
           signal: controller.signal,
@@ -171,6 +180,30 @@ export function ChatView({ initial, matters, models, autoQuery, autoMatter, auto
     abortRef.current?.abort();
     setStreaming(false);
     setStatus(null);
+  };
+
+  const startEdit = (index: number) => {
+    if (streaming) return;
+    setError(null);
+    setEditing({ index, draft: messages[index]?.content ?? "" });
+  };
+
+  const submitEdit = () => {
+    if (!editing) return;
+    const { index, draft } = editing;
+    if (!draft.trim()) return;
+    setEditing(null);
+    send(draft, index);
+  };
+
+  const onEditKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setEditing(null);
+    } else if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      submitEdit();
+    }
   };
 
   const remove = async () => {
@@ -358,9 +391,41 @@ export function ChatView({ initial, matters, models, autoQuery, autoMatter, auto
                 </span>
               )}
               <div className={cn("min-w-0 max-w-full", m.role === "user" ? "rounded-xl bg-surface px-3.5 py-2.5" : "flex-1")}>
-                <p className={cn("whitespace-pre-wrap break-words text-[14px] leading-7 text-fg", !m.content && streaming && "text-fg-muted")}>
-                  {m.content || (streaming && i === messages.length - 1 ? status ?? "Thinking…" : "")}
-                </p>
+                {m.role === "user" ? (
+                  editing && editing.index === i ? (
+                    <div className="w-full min-w-0 sm:min-w-[420px]">
+                      <label htmlFor={`edit-message-${i}`} className="sr-only">
+                        Edit message
+                      </label>
+                      <textarea
+                        id={`edit-message-${i}`}
+                        autoFocus
+                        rows={3}
+                        value={editing.draft}
+                        onChange={(e) => setEditing({ index: i, draft: e.target.value })}
+                        onKeyDown={onEditKeyDown}
+                        className="block max-h-[240px] w-full resize-none rounded-lg border border-line bg-white px-3 py-2 text-[14px] leading-6 text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+                      />
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-fg-subtle">Enter to resend · Esc to cancel</span>
+                        <div className="flex items-center gap-1.5">
+                          <Button variant="ghost" size="sm" onClick={() => setEditing(null)}>
+                            Cancel
+                          </Button>
+                          <Button variant="primary" size="sm" onClick={submitEdit} disabled={!editing.draft.trim()}>
+                            Save &amp; resend
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap break-words text-[14px] leading-7 text-fg">{m.content}</p>
+                  )
+                ) : m.content ? (
+                  <Markdown>{m.content}</Markdown>
+                ) : (
+                  <p className="text-[14px] leading-7 text-fg-muted">{streaming && i === messages.length - 1 ? status ?? "Thinking…" : ""}</p>
+                )}
                 {m.workflow && (
                   <div className="mt-3 rounded-xl border border-accent/25 bg-accent/[0.04] p-3.5">
                     <div className="flex items-start gap-2.5">
@@ -384,7 +449,19 @@ export function ChatView({ initial, matters, models, autoQuery, autoMatter, auto
                     </button>
                   </div>
                 )}
-                <p className="mt-1.5 text-[10.5px] text-fg-subtle">{timeOf(m.ts)}</p>
+                <div className="mt-1.5 flex items-center gap-2 text-[10.5px] text-fg-subtle">
+                  <span>{timeOf(m.ts)}</span>
+                  {m.role === "user" && !(editing && editing.index === i) && (
+                    <button
+                      type="button"
+                      onClick={() => startEdit(i)}
+                      disabled={streaming}
+                      className="inline-flex items-center gap-1 rounded text-[10.5px] text-fg-subtle outline-none transition-colors hover:text-accent focus-visible:ring-2 focus-visible:ring-accent/40 disabled:opacity-40"
+                    >
+                      <LuPencil aria-hidden className="size-3" /> Edit
+                    </button>
+                  )}
+                </div>
               </div>
             </li>
           ))}

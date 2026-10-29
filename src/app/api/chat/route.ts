@@ -7,6 +7,8 @@ export const maxDuration = 120;
 const Body = z.object({
   message: z.string().min(1).max(20_000),
   conversationId: z.string().optional(),
+  /** Rewinds the thread to this user-message index and regenerates from there (inline edit). */
+  editIndex: z.number().int().min(0).max(10_000).optional(),
   caseId: z.string().nullish(),
   /** Documents (from the vault) attached to this conversation. Sent redacted to the model. */
   docIds: z.array(z.string()).max(50).optional(),

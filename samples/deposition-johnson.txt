@@ -1,0 +1,88 @@
+[[PAGE 1]]
+UNITED STATES DISTRICT COURT
+NORTHERN DISTRICT OF ILLINOIS
+EASTERN DIVISION
+
+SARAH ELIZABETH JOHNSON,                     )
+                       Plaintiff,            )   Case No. 1:24-cv-00873
+        v.                                   )
+NORTHWIND LOGISTICS LLC, a Delaware limited  )
+liability company,                           )
+                       Defendant.            )
+
+DEPOSITION OF SARAH ELIZABETH JOHNSON
+Tuesday, March 3rd, 2021, 9:14 a.m.
+Chicago, Illinois
+
+Reported by: Elena Rodriguez-Vega, CSR No. 084-2219
+Job No. 2021-8842
+
+[[PAGE 2]]
+APPEARANCES:
+
+On behalf of the Plaintiff:
+  Marcus T. Whitfield, Esq.
+  Whitfield & Barnes LLP
+  2200 West Madison Street, Suite 1410
+  Chicago, IL 60612
+  Direct: (312) 555-0182
+  Email: m.whitfield@whitfieldbarnes.example
+
+On behalf of the Defendant:
+  Priya N. Ramanathan, Esq.
+  Hollister, Grant & Okafor P.C.
+  One North Wacker Drive, 29th Floor
+  Chicago, IL 60606
+  Direct: +1 312-555-0147
+  Email: p.ramanathan@hollistergrant.example
+
+DEPOSITION EXAMINATION
+
+BY MR. WHITFIELD:
+
+Q.  Please state your full name for the record.
+A.  Sarah Elizabeth Johnson.
+
+Q.  And your home address?
+A.  1420 Willow Creek Drive, Apt 6B, Springfield, IL 62704.
+
+Q.  How long have you lived there?
+A.  Since 2018-06-15. Before that I was at 88 Harbor Point Road, Unit 12, Evanston, IL 60201.
+
+Q.  What is the best phone number to reach you?
+A.  (415) 555-0182. My cell is +1 212-555-0147 and my work line is 312.555.0199.
+
+Q.  And your email address?
+A.  sarah.johnson@example.com, or s.johnson@acme-corp.example for work.
+
+[[PAGE 3]]
+Q.  For identification purposes, what is your Social Security number?
+A.  412-88-9371. My date of birth is 03/15/1987.
+
+Q.  Where were you employed in March 2021?
+A.  Acme Corporation, 500 Commerce Parkway, Building C, Springfield, IL 62704.
+    My supervisor was Marcus T. Whitfield. Payroll reached me at payroll@acme-corp.example.
+
+Q.  Did you use a company card for travel?
+A.  Yes, a Visa ending 4111 1111 1111 1111 and a back-up Mastercard 5500 0000 0000 0004.
+
+Q.  What was your salary at the time?
+A.  $48,500.00 per year, plus a bonus of USD 1,250,000 over three years tied to the Northwind contract.
+
+Q.  Let's talk about the contract. When was it signed?
+A.  March 3rd, 2021. The amendment is dated 3rd of March, 2021 and the renewal was 2022-03-15.
+
+Q.  Who signed for Northwind?
+A.  Elena Rodriguez-Vega, their General Counsel. She emailed me from elena.rodriguez@northwind-logistics.example on 03/20/2022.
+
+Q.  Was the document stored online?
+A.  Yes, at https://intranet.northwind-logistics.example/contracts/8842 and a public copy at www.example.com/msa.
+    The file server was 192.168.14.22, and the vendor portal resolved to 203.0.113.7.
+
+Q.  What did the deal ultimately cost the company?
+A.  Roughly $2.4 million, against an initial estimate of $900,000.
+
+Q.  Anything else you want the record to reflect?
+A.  Only that Northwind never delivered the audit logs it promised in Section 7.3.
+
+EXAMINATION CONCLUDED AT 4:37 P.M.

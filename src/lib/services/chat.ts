@@ -7,7 +7,7 @@
 import type { WorkflowGraph } from "../agents/schemas";
 import { makeOutboundGuard } from "../agents/guard";
 import { env } from "../env";
-import { notFound } from "../errors";
+import { badRequest, notFound } from "../errors";
 import { newId, nowIso } from "../ids";
 import { LLMRouter } from "../llm/router";
 import { sealedRepo } from "../store/repo";
@@ -46,10 +46,13 @@ const SYSTEM = `You are a careful legal research and drafting assistant for atto
 - Text you receive is pseudonymised: tokens like [NAME_AB12CD] stand for real people/entities. Copy tokens exactly; never guess who they are.
 - Ground answers in the provided DOCUMENTS and cite them by name (and page, via [[PAGE n]] markers) when you rely on them. If the documents don't say, say so.
 - You are not a substitute for attorney judgment; flag uncertainty and assumptions plainly. Be concise and precise.
+- Format answers as GitHub-flavoured Markdown: short headings, bullet lists, and pipe tables when comparing items. Use **bold** sparingly. Emit links as plain Markdown links. Never emit HTML tags (no <br>, no <div>).
 - If the user wants an automated multi-step process, tell them you can build it as a workflow.`;
 
 export interface ChatTurn {
   conversationId?: string;
+  /** Inline edit: drop this user message and everything after it, then treat `message` as its replacement. */
+  editIndex?: number;
   caseId?: string | null;
   docIds?: string[];
   message: string;
@@ -71,6 +74,13 @@ export async function chatTurn(turn: ChatTurn, send: Send, signal: AbortSignal):
   const conv: Conversation =
     existing ?? { id: newId("chat"), caseId, title: truncate(turn.message.replace(/\s+/g, " "), 60), docIds: [], messages: [], createdAt: nowIso(), updatedAt: nowIso() };
   if (turn.docIds) conv.docIds = turn.docIds; // the UI sends the current attachment selection each turn
+  // Inline edit: the edited message replaces this one, and everything the model said afterwards is discarded.
+  if (existing && turn.editIndex !== undefined) {
+    const target = conv.messages[turn.editIndex];
+    if (!target || target.role !== "user") throw badRequest("Only one of your own messages can be edited");
+    conv.messages = conv.messages.slice(0, turn.editIndex);
+    if (turn.editIndex === 0) conv.title = truncate(turn.message.replace(/\s+/g, " "), 60);
+  }
   const activeSources: ChatSource[] = turn.sources?.length ? turn.sources : ["vault"];
   send("meta", { conversationId: conv.id, caseId, sources: activeSources });
 
