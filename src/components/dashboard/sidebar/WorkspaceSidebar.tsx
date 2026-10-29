@@ -70,7 +70,7 @@ export function WorkspaceSidebar({ spaces, recents, pinned, user, onToggle }: Pr
         <SidebarNavItem icon={<LuEllipsis />} label="More" href="/settings" active={pathname.startsWith("/settings")} />
 
         <SidebarSectionLabel>Apps</SidebarSectionLabel>
-        <SidebarNavItem icon={<LuLayers />} label="Contract Intelligence" href="/workflows" active={pathname.startsWith("/workflows")} />
+        <SidebarNavItem icon={<LuLayers />} label="Workflows" href="/workflows" active={pathname.startsWith("/workflows")} />
 
         {recents.length > 0 && (
           <>

@@ -13,11 +13,26 @@ const r = () =>
   (redis ??= new Redis({
     url: need("UPSTASH_REDIS_REST_URL"),
     token: need("UPSTASH_REDIS_REST_TOKEN"),
-    // We store pre-serialised JSON strings; auto-deserialisation would turn some back into objects unpredictably.
+    // We store pre-serialised JSON strings, so the SDK must not parse them for us. Note this also
+    // switches off command-level shaping (HGETALL → object), which `rows()` below puts back.
     automaticDeserialization: false,
   }));
 
 const col = (c: string) => `lf:c:${c}`;
+
+/**
+ * `automaticDeserialization: false` disables every command's result transform, not just JSON parsing —
+ * so HGETALL comes back as Upstash's flat wire form `[field, value, field, value, …]` instead of an object.
+ * Normalise it here so callers get the plain map they're typed for.
+ */
+function rows(raw: unknown): Record<string, string> {
+  if (Array.isArray(raw)) {
+    const out: Record<string, string> = {};
+    for (let i = 0; i < raw.length; i += 2) out[String(raw[i])] = String(raw[i + 1]);
+    return out;
+  }
+  return (raw as Record<string, string> | null) ?? {};
+}
 
 const kv: KV = {
   async get<T>(c: string, id: string) {
@@ -31,14 +46,23 @@ const kv: KV = {
     await r().hdel(col(c), id);
   },
   async list<T>(c: string) {
-    const all = await r().hgetall<Record<string, string>>(col(c));
-    return Object.values(all ?? {}).map((s) => JSON.parse(s) as T);
+    const all = rows(await r().hgetall<Record<string, unknown>>(col(c)));
+    const out: T[] = [];
+    for (const [id, raw] of Object.entries(all)) {
+      try {
+        out.push(JSON.parse(raw) as T);
+      } catch {
+        // One unreadable row must not 500 every page that lists this collection.
+        console.error(`[store] skipping unparseable record ${col(c)}/${id}`);
+      }
+    }
+    return out;
   },
   async hset(key, fields) {
     if (Object.keys(fields).length) await r().hset(`lf:h:${key}`, fields);
   },
   async hgetall(key) {
-    return (await r().hgetall<Record<string, string>>(`lf:h:${key}`)) ?? {};
+    return rows(await r().hgetall<Record<string, unknown>>(`lf:h:${key}`));
   },
   async delKey(key) {
     await r().del(`lf:h:${key}`, `lf:l:${key}`);

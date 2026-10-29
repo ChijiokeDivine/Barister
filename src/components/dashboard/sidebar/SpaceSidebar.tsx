@@ -59,7 +59,7 @@ export function SpaceSidebar({ spaces, recents, activeSpaceName, caseId, onToggl
         <SidebarNavItem icon={<LuPlus />} label="New" href={`/chat?matter=${caseId}`} />
         <SidebarNavItem icon={<LuBot />} label="Agents" href="/agents" active={pathname.startsWith("/agents")} />
         <SidebarNavItem icon={<LuFolder />} label="Vault" href={`/vault?caseId=${caseId}`} active={pathname.startsWith("/vault")} />
-        <SidebarNavItem icon={<LuLayers />} label="Contract intelligence" href="/workflows" active={pathname.startsWith("/workflows")} />
+        <SidebarNavItem icon={<LuLayers />} label="Workflows" href="/workflows" active={pathname.startsWith("/workflows")} />
         <SidebarNavItem icon={<LuBookOpen />} label="Library" href="/outputs" active={pathname.startsWith("/outputs")} />
         <SidebarNavItem icon={<LuEllipsis />} label="More" href="/settings" active={pathname.startsWith("/settings")} />
 
