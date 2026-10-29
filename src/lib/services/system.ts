@@ -12,7 +12,7 @@ export async function getSystemStatus() {
     storage = { driver: e.STORAGE_DRIVER ?? "unset", ok: false, error: (err as Error).message };
   }
   return {
-    auth: Boolean(e.APP_API_KEY),
+    auth: Boolean(e.DATABASE_URL),
     encryption: Boolean(e.VAULT_ENCRYPTION_KEY),
     storage,
     llm: {

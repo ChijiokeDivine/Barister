@@ -18,7 +18,7 @@ import {
 } from "react-icons/lu";
 import { cn } from "@/lib/cn";
 import { LogoMark } from "../ui/Brand";
-import { currentUser } from "@/lib/ui/user";
+import type { ShellUser } from "@/lib/auth/types";
 
 export type RailKey = "new" | "agents" | "vault" | "more" | "apps" | "spaces" | "pinned" | "recent";
 
@@ -60,11 +60,12 @@ function RailItem({ icon, label, href, active }: RailItemProps) {
 
 interface Props {
   activeKeys?: RailKey[];
+  user: ShellUser;
   onToggle: () => void;
 }
 
 /** Collapsed icon rail. The logo turns into an expand button on hover/focus. */
-export function SidebarRail({ activeKeys = [], onToggle }: Props) {
+export function SidebarRail({ activeKeys = [], user, onToggle }: Props) {
   const is = (k: RailKey) => activeKeys.includes(k);
   const router = useRouter();
 
@@ -116,11 +117,11 @@ export function SidebarRail({ activeKeys = [], onToggle }: Props) {
         </button>
         <button
           type="button"
-          aria-label={`${currentUser.name} account`}
+          aria-label={`${user.name} account`}
           onClick={() => router.push("/settings")}
           className="mt-1 inline-flex size-6 items-center justify-center rounded-full bg-white text-[11px] font-semibold text-black outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         >
-          {currentUser.initial}
+          {user.initial}
         </button>
       </div>
     </div>

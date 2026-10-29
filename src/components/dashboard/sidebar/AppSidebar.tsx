@@ -2,6 +2,7 @@
 
 import type { MouseEvent } from "react";
 import { cn } from "@/lib/cn";
+import type { ShellUser } from "@/lib/auth/types";
 import type { ShellData } from "../types";
 import { SidebarRail, type RailKey } from "./SidebarRail";
 import { SpaceSidebar } from "./SpaceSidebar";
@@ -17,6 +18,7 @@ interface AppSidebarProps {
   /** Highlighted items in the collapsed rail. */
   railActive?: RailKey[];
   nav: ShellData;
+  user: ShellUser;
   /** Name of the matter currently open (space variant footer). */
   activeSpaceName?: string;
   activeCaseId?: string;
@@ -40,6 +42,7 @@ export function AppSidebar({
   onToggle,
   railActive,
   nav,
+  user,
   activeSpaceName,
   activeCaseId,
   className,
@@ -71,7 +74,7 @@ export function AppSidebar({
       {/* Desktop rail. */}
       {collapsed && (
         <div className="hidden h-full w-full lg:block">
-          <SidebarRail activeKeys={railActive} onToggle={onToggle} />
+          <SidebarRail activeKeys={railActive} user={user} onToggle={onToggle} />
         </div>
       )}
 
@@ -80,7 +83,7 @@ export function AppSidebar({
         {variant === "space" && activeSpaceName && activeCaseId ? (
           <SpaceSidebar spaces={nav.spaces} recents={nav.recents} activeSpaceName={activeSpaceName} caseId={activeCaseId} onToggle={onToggle} />
         ) : (
-          <WorkspaceSidebar spaces={nav.spaces} recents={nav.recents} pinned={nav.pinned} onToggle={onToggle} />
+          <WorkspaceSidebar spaces={nav.spaces} recents={nav.recents} pinned={nav.pinned} user={user} onToggle={onToggle} />
         )}
       </div>
     </aside>

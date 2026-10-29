@@ -12,7 +12,7 @@ export class ApiError extends Error {
 }
 
 export const badRequest = (msg: string, details?: unknown) => new ApiError(400, "bad_request", msg, details);
-export const unauthorized = () => new ApiError(401, "unauthorized", "Missing or invalid API key");
+export const unauthorized = () => new ApiError(401, "unauthorized", "Sign in to continue");
 export const notFound = (what: string) => new ApiError(404, "not_found", `${what} not found`);
 export const conflict = (msg: string) => new ApiError(409, "conflict", msg);
 export const tooLarge = (msg: string) => new ApiError(413, "payload_too_large", msg);

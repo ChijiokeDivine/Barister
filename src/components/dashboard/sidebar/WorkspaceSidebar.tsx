@@ -18,18 +18,19 @@ import {
 import { IconButton } from "../ui/IconButton";
 import { Wordmark } from "../ui/Brand";
 import type { RecentThread, Space } from "../types";
-import { currentUser } from "@/lib/ui/user";
+import type { ShellUser } from "@/lib/auth/types";
 import { SidebarNavItem, SidebarSectionLabel, SpaceSwatch, ThreadRow } from "./primitives";
 
 interface Props {
   spaces: Space[];
   recents: RecentThread[];
   pinned: RecentThread[];
+  user: ShellUser;
   onToggle: () => void;
 }
 
 /** Expanded sidebar for the home screen: threads, apps, pinned and spaces. */
-export function WorkspaceSidebar({ spaces, recents, pinned, onToggle }: Props) {
+export function WorkspaceSidebar({ spaces, recents, pinned, user, onToggle }: Props) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -112,9 +113,9 @@ export function WorkspaceSidebar({ spaces, recents, pinned, onToggle }: Props) {
             aria-hidden
             className="inline-flex size-5 items-center justify-center rounded-[5px] bg-sidebar-active text-[11px] font-medium"
           >
-            {currentUser.initial}
+            {user.initial}
           </span>
-          <span className="truncate">{currentUser.name}</span>
+          <span className="truncate">{user.name}</span>
         </Link>
       </div>
     </div>

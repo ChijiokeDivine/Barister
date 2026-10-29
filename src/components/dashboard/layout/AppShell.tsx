@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { LuBell, LuMenu, LuSearch } from "react-icons/lu";
 import { cn } from "@/lib/cn";
-import { currentUser } from "@/lib/ui/user";
+import type { ShellUser } from "@/lib/auth/types";
 import type { ShellData } from "../types";
 import { AppSidebar, type SidebarVariant } from "../sidebar/AppSidebar";
 import type { RailKey } from "../sidebar/SidebarRail";
@@ -33,6 +33,7 @@ const DESKTOP_QUERY = "(min-width: 1024px)";
 
 interface SidebarControllerProps {
   nav: ShellData;
+  user: ShellUser;
   mobileOpen: boolean;
   onMobileOpenChange: (open: boolean) => void;
 }
@@ -42,7 +43,7 @@ interface SidebarControllerProps {
  * keeps it isolated behind the Suspense boundary below, so pages with an
  * unknown dynamic param can still prerender their content.
  */
-function SidebarController({ nav, mobileOpen, onMobileOpenChange }: SidebarControllerProps) {
+function SidebarController({ nav, user, mobileOpen, onMobileOpenChange }: SidebarControllerProps) {
   const pathname = usePathname();
   const defaults = defaultsFor(pathname);
   // null = follow the route default, boolean = user's explicit choice.
@@ -119,6 +120,7 @@ function SidebarController({ nav, mobileOpen, onMobileOpenChange }: SidebarContr
       onToggle={toggleNavigation}
       railActive={defaults.railActive}
       nav={nav}
+      user={user}
       activeCaseId={activeCaseId}
       activeSpaceName={activeSpaceName}
       mobileOpen={mobileOpen}
@@ -137,7 +139,7 @@ function SidebarFallback() {
  * Dashboard frame: sidebar + scrolling main area.
  * Below `lg` the sidebar becomes an off-canvas drawer with a compact top bar.
  */
-export function AppShell({ nav, children }: { nav: ShellData; children: ReactNode }) {
+export function AppShell({ nav, user, children }: { nav: ShellData; user: ShellUser; children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Escape closes the mobile drawer only.
@@ -162,7 +164,7 @@ export function AppShell({ nav, children }: { nav: ShellData; children: ReactNod
       )}
 
       <Suspense fallback={<SidebarFallback />}>
-        <SidebarController nav={nav} mobileOpen={mobileOpen} onMobileOpenChange={setMobileOpen} />
+        <SidebarController nav={nav} user={user} mobileOpen={mobileOpen} onMobileOpenChange={setMobileOpen} />
       </Suspense>
 
       <main
@@ -212,10 +214,10 @@ export function AppShell({ nav, children }: { nav: ShellData; children: ReactNod
             </Link>
             <Link
               href="/settings"
-              aria-label={`${currentUser.name} account`}
+              aria-label={`${user.name} account`}
               className="ml-1 inline-flex size-7 items-center justify-center rounded-full bg-sidebar text-[11px] font-semibold text-sidebar-fg"
             >
-              {currentUser.initial}
+              {user.initial}
             </Link>
           </div>
         </header>

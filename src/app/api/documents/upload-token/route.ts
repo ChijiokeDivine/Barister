@@ -13,7 +13,7 @@ import { getStore } from "@/lib/store";
  */
 export async function POST(req: Request) {
   try {
-    requireAuth(req);
+    await requireAuth(req);
     if (getStore().driver !== "cloud") throw badRequest("Large uploads need cloud storage (Vercel Blob). Use /api/documents with files ≤ MAX_UPLOAD_MB locally.");
     const body = (await req.json()) as HandleUploadBody;
     const result = await handleUpload({

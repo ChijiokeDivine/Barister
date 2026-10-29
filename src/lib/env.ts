@@ -5,6 +5,8 @@ import { notConfigured } from "./errors";
 // that feature instead of crashing the whole app. Use need() where a key is mandatory.
 const schema = z.object({
   APP_API_KEY: z.string().optional(),
+  DATABASE_URL: z.string().optional(),
+  DIRECT_URL: z.string().optional(),
   VAULT_ENCRYPTION_KEY: z.string().optional(),
 
   GEMINI_API_KEY: z.string().optional(),

@@ -2,18 +2,18 @@ import Link from "next/link";
 import { HomeLauncher } from "@/components/dashboard/chat/HomeLauncher";
 import { TimeGreeting } from "@/components/dashboard/layout/Greeting";
 import { getDashboardData } from "@/lib/server/queries";
-import { currentUser } from "@/lib/ui/user";
+import { getCurrentShellUser } from "@/lib/auth/dal";
 
 // Workspace data is request-time (encrypted store).
 export const instant = false;
 
 /** Home: greeting, launcher composer and source chips. */
 export default async function DashboardPage() {
-  const data = await getDashboardData();
+  const [data, user] = await Promise.all([getDashboardData(), getCurrentShellUser()]);
 
   return (
     <div className="flex min-h-full flex-1 flex-col items-center justify-center px-4 pb-16 sm:px-6 lg:pb-24">
-      <TimeGreeting name={currentUser.firstName} />
+      <TimeGreeting name={user.firstName} />
       <div className="mt-7 w-full max-w-[680px] sm:mt-9">
         <HomeLauncher matters={data.matters} models={data.models} />
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-[12px] text-fg-subtle">

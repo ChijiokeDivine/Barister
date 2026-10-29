@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { LuExternalLink } from "react-icons/lu";
+import { SignOutButton } from "@/components/auth/SignOutButton";
 import { SettingsForm } from "@/components/dashboard/settings/SettingsForm";
 import { Badge } from "@/components/dashboard/ui/Badge";
 import { Panel } from "@/components/dashboard/ui/Panel";
+import { getCurrentUser } from "@/lib/auth/dal";
 import { getSettingsPage } from "@/lib/server/queries";
 
 export const instant = false;
@@ -12,7 +14,7 @@ function statusTone(ok: boolean) {
 }
 
 export default async function SettingsPage() {
-  const { settings, system } = await getSettingsPage();
+  const [{ settings, system }, user] = await Promise.all([getSettingsPage(), getCurrentUser()]);
   const chain = system.chain;
   const chainAddress = "address" in chain ? chain.address : undefined;
   const explorer = "explorer" in chain ? chain.explorer : undefined;
@@ -31,11 +33,21 @@ export default async function SettingsPage() {
         <SettingsForm initial={settings} />
 
         <aside className="space-y-4">
+          <Panel title="Account" description="You are signed in to this workspace.">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="truncate text-[13px] font-medium text-fg">{user.name}</p>
+                <p className="mt-0.5 truncate text-[12px] text-fg-muted">{user.email}</p>
+              </div>
+              <SignOutButton />
+            </div>
+          </Panel>
+
           <Panel title="System status" description="Configuration is read from the server environment.">
             <ul className="space-y-2.5 text-[12.5px]">
               <li className="flex items-center justify-between gap-3">
-                <span className="text-fg-muted">API authentication</span>
-                <Badge tone={statusTone(system.auth)}>{system.auth ? "Configured" : "Missing key"}</Badge>
+                <span className="text-fg-muted">Accounts database</span>
+                <Badge tone={statusTone(system.auth)}>{system.auth ? "Connected" : "Not configured"}</Badge>
               </li>
               <li className="flex items-center justify-between gap-3">
                 <span className="text-fg-muted">Vault encryption</span>

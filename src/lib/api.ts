@@ -32,7 +32,7 @@ export function errorResponse(e: unknown): Response {
 export function route<P extends Params = Params>(handler: Handler<P>, opts: { auth?: boolean } = {}) {
   return async (req: Request, ctx: { params: Promise<P> }): Promise<Response> => {
     try {
-      if (opts.auth !== false) requireAuth(req);
+      if (opts.auth !== false) await requireAuth(req);
       const out = await handler(req, { params: await ctx.params });
       return out instanceof Response ? out : json(out ?? { ok: true });
     } catch (e) {
