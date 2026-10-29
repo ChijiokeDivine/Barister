@@ -23,10 +23,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           </p>
         </div>
 
-        <div className="relative flex items-center gap-3 text-[10.5px] uppercase tracking-[0.18em] text-[#f9f7f3]/35">
-          <span aria-hidden className="h-px w-8 bg-[#f9f7f3]/25" />
-          Barister · Legal operations
-        </div>
       </aside>
 
       <main className="flex min-h-dvh flex-1 flex-col">

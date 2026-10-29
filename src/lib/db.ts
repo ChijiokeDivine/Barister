@@ -9,7 +9,7 @@ import { notConfigured } from "./errors";
  * DATABASE_URL should point at the pooled (transaction-mode) connection for the
  * app. DDL runs through DIRECT_URL in scripts/db-setup.mjs.
  */
-let pool: Pool | undefined;
+const globalPool = globalThis as unknown as { __baristerPool?: Pool };
 
 function sslFor(connectionString: string): false | { rejectUnauthorized: boolean } | undefined {
   const mode = process.env.PGSSLMODE;
@@ -21,10 +21,10 @@ function sslFor(connectionString: string): false | { rejectUnauthorized: boolean
 }
 
 export function getPool(): Pool {
-  if (pool) return pool;
+  if (globalPool.__baristerPool) return globalPool.__baristerPool;
   const connectionString = env().DATABASE_URL;
   if (!connectionString) throw notConfigured("DATABASE_URL");
-  pool = new Pool({
+  const pool = new Pool({
     connectionString,
     ssl: sslFor(connectionString),
     max: Number(process.env.PG_POOL_MAX ?? 5),
@@ -34,6 +34,8 @@ export function getPool(): Pool {
   // A pooled client can drop while idle; keep the process alive and let the
   // next query open a fresh connection instead of crashing the request.
   pool.on("error", (err) => console.error("[db] idle client error", err.message));
+  // Survive dev hot reloads without leaking a new pool per module instance.
+  globalPool.__baristerPool = pool;
   return pool;
 }
 
