@@ -11,6 +11,11 @@ pnpm test                      # redaction, LLM router resilience, full pipeline
 ```
 Open `/sign-up` to create an account, then `/sign-in`. Every `(dashboard)` page redirects to `/sign-in` without a valid session. API routes accept that session cookie; `APP_API_KEY` remains an optional bearer token for scripts. Responses are `{ data }` or `{ error: { code, message, details? } }`.
 
+## Testing redaction
+`pnpm test` runs the Node test files in `src/tests` (redaction round-trip, router resilience, full pipeline with a fake model).
+
+In the app, open a matter → **Redaction** tab. There you can declare **known terms** (parties/witnesses masked by exact match, including aliases) and run a **live preview** of the real redactor over pasted text. The preview stores nothing, and its tokens are per-matter keyed hashes, so they match what an upload of the same text would produce.
+
 ## How a request flows (the privacy guarantee)
 `upload → SHA-256 verify → parse (pdf/docx/txt) → AES-GCM encrypt original+text → redact (wink-nlp + regex) → vault`
 `run → engine loads ONLY redacted text → agents → outbound guard on every prompt → LLM → rehydrate at the final Deliverable node`
@@ -50,4 +55,4 @@ Tokens are keyed hashes per matter (stable across docs, no coordination); dates 
 - **Scanned PDFs are rejected** (OCR would mean sending raw pages to a cloud model before redaction). OCR locally, then upload.
 
 ## Known limits / next steps
-Password reset and email verification are not implemented yet; no rate limiting on sign-in; cross-batch contradictions are skipped for timelines beyond ~450k chars (logged as a warning); Sepolia anchoring needs a funded testnet key; the LLM adapters were verified against SDK types and the router by tests, but not against live Gemini/Groq.
+Password reset and email verification are not implemented yet; no rate limiting on sign-in; cross-batch contradictions are skipped for timelines beyond ~450k chars (logged as a warning); Sepolia anchoring needs a funded testnet key.

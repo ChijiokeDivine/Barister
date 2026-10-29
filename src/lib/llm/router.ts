@@ -66,7 +66,9 @@ const BACKOFF_MS = [1_500, 5_000, 15_000];
 export function defaultChains(): Record<Tier, Provider[]> {
   const e = env();
   const gemini = e.GEMINI_API_KEY ? [geminiProvider(e.GEMINI_MODEL), geminiProvider(e.GEMINI_FALLBACK_MODEL)] : [];
-  const groq = e.GROQ_API_KEY ? [groqProvider(e.GROQ_MODEL)] : [];
+  // Small model first for interactive steps, then the big one before leaving the provider.
+  // Deduped so GROQ_FAST_MODEL === GROQ_MODEL doesn't burn a retry on the same model.
+  const groq = e.GROQ_API_KEY ? [...new Set([e.GROQ_FAST_MODEL, e.GROQ_MODEL])].map((m) => groqProvider(m)) : [];
   return {
     long: [...gemini, ...groq], // Groq last: only fits if the prompt is small enough (checked per request)
     fast: [...groq, ...gemini.slice(1)],

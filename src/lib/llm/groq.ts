@@ -12,13 +12,16 @@ function toParams(model: string, req: LLMRequest) {
     messages: [...(system ? [{ role: "system" as const, content: system }] : []), ...req.messages],
     temperature: req.temperature ?? 0.3,
     max_completion_tokens: req.maxOutputTokens,
+    // openai/gpt-oss models spend part of the budget on reasoning tokens. "low" keeps interactive steps fast
+    // and leaves room for the actual JSON; other hosted models reject the parameter, so only send it for these.
+    ...(model.startsWith("openai/gpt-oss") ? { reasoning_effort: "low" as const } : {}),
     // json_object mode is the broadly supported option across Groq models (strict json_schema is model-limited);
     // the router validates with zod and repairs, so we don't depend on provider-side schema enforcement.
     ...(req.json ? { response_format: { type: "json_object" as const } } : {}),
   };
 }
 
-/** Groq (Llama) — very fast generation for interactive steps. Smaller window than Gemini. */
+/** Groq — very fast generation for interactive steps. Smaller window than Gemini. Model family rotates; keep it in env. */
 export function groqProvider(model = env().GROQ_MODEL): Provider {
   return {
     id: "groq",
