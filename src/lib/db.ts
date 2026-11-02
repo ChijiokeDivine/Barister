@@ -39,6 +39,26 @@ export function getPool(): Pool {
   return pool;
 }
 
+/** DNS hiccups (VPN, hotspot, flaky resolver) surface as these codes while the pool opens a socket. */
+const DNS_ERROR_CODES = new Set(["ENOTFOUND", "EAI_AGAIN"]);
+
+const isDnsError = (err: unknown) => DNS_ERROR_CODES.has((err as NodeJS.ErrnoException | undefined)?.code ?? "");
+
+/**
+ * A DNS failure happens before the statement reaches Postgres, so retrying it
+ * can never double-apply a write. Other errors are passed straight through.
+ */
+async function queryWithDnsRetry<T extends QueryResultRow>(text: string, values: unknown[]): Promise<QueryResult<T>> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await getPool().query<T>(text, values);
+    } catch (err) {
+      if (attempt >= 3 || !isDnsError(err)) throw err;
+      await new Promise((resolve) => setTimeout(resolve, attempt * 250));
+    }
+  }
+}
+
 export function query<T extends QueryResultRow = QueryResultRow>(text: string, values: unknown[] = []): Promise<QueryResult<T>> {
-  return getPool().query<T>(text, values);
+  return queryWithDnsRetry<T>(text, values);
 }

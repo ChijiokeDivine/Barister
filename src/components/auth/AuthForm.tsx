@@ -14,7 +14,7 @@ type FieldErrors = Partial<Record<"name" | "email" | "password", string>>;
 
 const COPY = {
   "sign-in": {
-    eyebrow: "Welcome back",
+  
     title: "Sign in to Barister",
     description: "Pick up your matters, documents and agent runs where you left off.",
     submit: "Sign in",
@@ -23,7 +23,7 @@ const COPY = {
     switchHref: "/sign-up",
   },
   "sign-up": {
-    eyebrow: "Get started",
+ 
     title: "Create your account",
     description: "Set up a workspace for your matters, vault and legal workflows.",
     submit: "Create account",
@@ -87,7 +87,7 @@ export function AuthForm({ mode, next }: { mode: Mode; next?: string }) {
 
   return (
     <div>
-      <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-accent">{copy.eyebrow}</p>
+
       <h1 className="mt-2 font-serif text-[30px] leading-[1.1] tracking-[-0.02em] text-[#0f0e0d]">{copy.title}</h1>
       <p className="mt-2 text-[13px] leading-5 text-[#6b6a67]">{copy.description}</p>
 

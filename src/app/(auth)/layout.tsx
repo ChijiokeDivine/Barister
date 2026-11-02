@@ -7,9 +7,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh bg-[#f9f7f3] text-[#0f0e0d]">
       <aside className="relative hidden w-[46%] max-w-[640px] flex-col justify-between overflow-hidden bg-[#3b1315] p-10 text-[#f9f7f3] lg:flex xl:p-14">
-        <div aria-hidden className="pointer-events-none absolute -right-24 top-1/4 size-[420px] rounded-full bg-[#f9f7f3]/[0.04] blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[url('/images/pexels-khezez-34817114.jpg')] bg-cover bg-center" />
+        <div aria-hidden className="pointer-events-none absolute inset-0   bg-[#000]/10" />
+
         <Link href="/" aria-label="Barister home" className="relative w-fit rounded outline-none focus-visible:ring-2 focus-visible:ring-white/40">
-          <Wordmark className="text-[26px]" />
+          <Wordmark className="text-[26px] text-[#fff]" />
         </Link>
 
         <div className="relative max-w-[380px]">
